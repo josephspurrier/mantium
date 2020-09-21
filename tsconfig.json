@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "target": "es5",
+    "module": "CommonJS",
+    "esModuleInterop": true,
+    "baseUrl": "./",
+    "strict": true,
+    "paths": {
+      "@/*": [
+        "src/*"
+      ],
+      "~/*": [
+        "*"
+      ]
+    },
+    "outDir": "./dist/",
+    "jsx": "react",
+    "jsxFactory": "z.createElement",
+    "jsxFragmentFactory": "z.fragment",
+    "allowJs": true,
+    "checkJs": true
+  },
+  "include": [
+    "*",
+    "src/**/*"
+  ]
+}

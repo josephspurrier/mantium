@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.schemastore.org/jsconfig",
+  "compilerOptions": {
+    "target": "es5",
+    "module": "CommonJS",
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "./",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ],
+      "~/*": [
+        "*"
+      ]
+    },
+    "checkJs": true
+  },
+  "include": [
+    "*",
+    "src/**/*"
+  ]
+}

@@ -1,0 +1,10 @@
+# OS files.
+.DS_Store
+thumbs.db
+
+# Environment files.
+.envrc
+
+# Dependency and compiled directories.
+node_modules/
+dist/

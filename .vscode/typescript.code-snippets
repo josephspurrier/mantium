@@ -1,0 +1,17 @@
+{
+  "Arrow Function": {
+    "prefix": "arrow",
+    "body": "($1) => { $2 }",
+    "description": "Creates an arrow function."
+  },
+  "On Click": {
+    "prefix": "onclick",
+    "body": "onclick: ($1) => { $2 }",
+    "description": "Creates an onclick with an arrow function."
+  },
+  "Log to Console": {
+    "prefix": "log",
+    "body": "console.log($1)",
+    "description": "Creates a console.log() statement."
+  }
+}
