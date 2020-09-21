@@ -57,5 +57,16 @@
     "stylelint-config-standard": "^20.0.0",
     "stylelint-scss": "^3.18.0",
     "webpack-dev-server": "^3.11.0"
-  }
+  },
+  "files": [
+    "src/lib/attrs.ts",
+    "src/lib/fragment.ts",
+    "src/lib/render.ts",
+    "src/lib/request.ts",
+    "src/lib/router.ts",
+    "src/lib/state.ts",
+    "src/lib/vdom.ts",
+    "src/lib/vnode.ts",
+    "src/lib/z.ts"
+  ]
 }
