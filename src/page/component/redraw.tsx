@@ -1,4 +1,4 @@
-import { m } from 'src/lib';
+import { m } from '../../lib';
 
 export const RedrawButtons = (): JSX.Element => {
   const [count, setCount] = m.useState(0);

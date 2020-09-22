@@ -81,8 +81,8 @@ export const updateAttrs = (
   newAttrs: JSX.ElementAttrs,
   oldAttrs: JSX.ElementAttrs = {},
 ): void => {
-  const Attrss = Object.assign({}, newAttrs, oldAttrs);
-  Object.keys(Attrss).forEach((name) => {
+  const Attrs = Object.assign({}, newAttrs, oldAttrs);
+  Object.keys(Attrs).forEach((name) => {
     updateSingleAttr(elem, name, newAttrs[name], oldAttrs[name]);
   });
 };

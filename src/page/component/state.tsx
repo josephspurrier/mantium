@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { m } from 'src/lib';
+import { m } from '../../lib';
 
 let globalCounter = 0;
 

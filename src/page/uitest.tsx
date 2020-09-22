@@ -1,10 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { m } from 'src/lib';
-import { Empty } from 'src/component/empty';
-import { FragLevel1 } from 'src/component/fragments';
-import { State } from 'src/component/state';
-import { RedrawButtons } from 'src/component/redraw';
-import { BooleanFlip } from 'src/component/boolean';
+import { m } from '../lib';
+import { Empty } from './component/empty';
+import { FragLevel1 } from './component/fragments';
+import { State } from './component/state';
+import { RedrawButtons } from './component/redraw';
+import { BooleanFlip } from './component/boolean';
 
 const Destructuring = ({ username }: { username: string }): JSX.Element => {
   return <div>Destructuring should show foo: {username}</div>;

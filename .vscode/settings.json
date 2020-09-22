@@ -4,7 +4,6 @@
     ".eslintignore": "ignore",
     ".eslintrc.json": "jsonc",
     ".prettierrc": "jsonc",
-    ".stylelintrc": "json", // Does not support comments in JSON: https://github.com/stylelint/stylelint/issues/982
     "babel.config.json": "jsonc", // Does not support $schema
     "jsconfig.json": "jsonc",
     "tsconfig.json": "jsonc",

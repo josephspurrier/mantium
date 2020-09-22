@@ -1,10 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { m } from 'src/lib';
-import { ErrorPage } from 'src/page/error';
-import { JSONRequest } from 'src/page/jsonrequest';
-import { MainPage } from 'src/page/main';
-import { Page2 } from 'src/page/page2';
-import { UITestPage } from 'src/page/uitest';
+import { m } from './lib';
+import { ErrorPage } from './page/error';
+import { JSONRequest } from './page/jsonrequest';
+import { MainPage } from './page/main';
+import { Page2 } from './page/page2';
+import { UITestPage } from './page/uitest';
 
 const rootElem = document.createElement('div');
 rootElem.setAttribute('id', 'root');
