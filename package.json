@@ -6,9 +6,6 @@
     "type": "git",
     "url": "https://github.com/josephspurrier/mantium.git"
   },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
-  },
   "author": "Joseph Spurrier",
   "license": "MIT",
   "main": "dist/index.js",
