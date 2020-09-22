@@ -1,6 +1,6 @@
 {
   "name": "mantium",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A client-side TypeScript library for building single page applications.",
   "repository": {
     "type": "git",

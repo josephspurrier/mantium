@@ -2,8 +2,6 @@
 
 **This is a WIP while testing how JSX works without React. Don't use this in production - it's designed as a learning tool to understand the internals of front-end frameworks.**
 
-It does support JSX via .jsx or .tsx file extensions. This project is designed to show how modern, front-end development tools integrate. It takes a while to piece together your own tools for linting, building, testing, etc. so you can reference this to see how to get all these different tools set up and integrated.
-
 This project supports these features:
 
 - [x] Render function for JSX
@@ -46,3 +44,233 @@ This project supports these features:
 - [ ] Unit tests
 - [ ] Clean up the types
 - [x] Launch on NPM to see how the process works
+
+# Code Samples
+
+Sample code is [here](https://github.com/josephspurrier/mantium/blob/main/src/index.tsx). npm package is [here](https://www.npmjs.com/package/mantium).
+
+## Routing
+
+```typescript
+import { m } from 'mantium';
+
+m.state.routerPrefix = '#';
+m.route(rootElem, '/', MainPage);
+m.route(rootElem, '/app', UITestPage);
+m.route(rootElem, '/404', ErrorPage);
+```
+
+## JSX Components
+
+```jsx
+import { m } from 'mantium';
+
+export const BooleanFlip = (): JSX.Element => {
+  const [isBool, setBool] = m.useState(false);
+  return (
+    <>
+      <button
+        onclick={() => {
+          setBool(!isBool());
+        }}
+      >
+        Change Boolean Value
+      </button>
+      <div>Current value: {isBool()}</div>
+    </>
+  );
+};
+```
+
+## Fragments
+
+```jsx
+import { m } from 'mantium';
+
+export const FragLevel1 = (): JSX.Element => {
+  return (
+    <>
+      <div>Fragment level 1.</div>
+      <FragLevel2 />
+    </>
+  );
+};
+
+export const FragLevel2 = (): JSX.Element => {
+  return (
+    <>
+      <div>Fragment level 2.</div>
+      <FragLevel3 />
+    </>
+  );
+};
+```
+
+## Passing Attributes and Children
+
+```jsx
+import { m } from 'mantium';
+
+export const App = (): JSX.Element => {
+  return (
+    <div class='app'>
+      <FragmentChild num1='10A' num2='10B'>
+        <div>Text should be in a div.</div>
+      </FragmentChild>
+    </div>
+  );
+};
+
+interface FragmentsAttrs {
+  num1: string;
+  num2: string;
+  children: JSX.Element | string;
+}
+
+const FragmentChild = (attrs: FragmentsAttrs): JSX.Element => {
+  return (
+    <>
+      <div name={attrs.num1}>div {attrs.num1}</div>
+      {attrs.children}
+      <div name={attrs.num2}>div {attrs.num2}</div>
+    </>
+  );
+};
+
+const rootElem = document.createElement('div');
+rootElem.setAttribute('id', 'root');
+document.body.appendChild(rootElem);
+m.render(rootElem, App);
+```
+
+## Redrawing and Event Handlers
+
+```jsx
+import { m } from 'mantium';
+
+export const RedrawButtons = (): JSX.Element => {
+  const [count, setCount] = m.useState(0);
+  const [count2, setCount2] = m.useState(0);
+  return (
+    <>
+      <button
+        onclick={() => {
+          setTimeout(() => {
+            setCount(count() + 1);
+          }, 1000);
+        }}
+      >
+        1 Second Timer without Redraw ({count()} clicks)
+      </button>
+
+      <button
+        onclick={() => {
+          m.redraw();
+        }}
+      >
+        Manual Redraw
+      </button>
+
+      <button
+        onclick={() => {
+          setTimeout(() => {
+            setCount2(count2() + 1);
+            m.redraw();
+          }, 1000);
+        }}
+      >
+        1 Second Timer with Redraw ({count2()} clicks)
+      </button>
+    </>
+  );
+};
+```
+
+## Requests
+
+
+```jsx
+import { m } from 'mantium';
+
+interface PostResponse {
+  userId: number;
+  id: number;
+  title: string;
+  body: string;
+}
+
+interface UserReponse {
+  id: number;
+  name: string;
+  username: string;
+  email: string;
+  address: {
+    street: string;
+    suite: string;
+    city: string;
+    zipcode: string;
+    geo: {
+      lat: string;
+      lng: string;
+    };
+  };
+  phone: string;
+  website: string;
+  company: {
+    name: string;
+    catchPhrase: string;
+    bs: string;
+  };
+}
+
+let alreadyRan = false;
+
+const useEffect = (f: () => void, when: string[] = []) => {
+  if (when.length === 0) {
+    if (!alreadyRan) {
+      alreadyRan = true;
+      f();
+    }
+  }
+};
+
+export const JSONRequest = (): JSX.Element => {
+  const [getPost, setPost] = m.useState({} as PostResponse);
+  const [getUser, setUser] = m.useState({} as UserReponse);
+
+  useEffect(() => {
+    m.request<PostResponse>({
+      url: 'https://jsonplaceholder.typicode.com/posts/5',
+    })
+      .then((data) => {
+        setPost(data);
+
+        return m
+          .request<UserReponse>({
+            url: `https://jsonplaceholder.typicode.com/users/${data.userId}`,
+          })
+          .then((udata) => {
+            setUser(udata);
+          })
+          .catch((error: Response) => {
+            console.warn(error);
+          });
+      })
+      .catch((error: Response) => {
+        console.warn(error);
+      });
+  });
+
+  return (
+    <>
+      <a title='home' href='#/'>
+        Back
+      </a>
+      <h1>Title: {getPost().title}</h1>
+      <h2>By: {getUser().name}</h2>
+      <i>Post ID: {getPost().id}</i>
+      <p>{getPost().body}</p>
+    </>
+  );
+};
+```
