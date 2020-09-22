@@ -6,6 +6,9 @@
     "type": "git",
     "url": "https://github.com/josephspurrier/mantium.git"
   },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
   "author": "Joseph Spurrier",
   "license": "MIT",
   "main": "dist/index.js",
@@ -46,14 +49,35 @@
     "webpack-dev-server": "^3.11.0"
   },
   "files": [
+    "dist/attrs.d.ts",
+    "dist/attrs.js",
     "src/lib/attrs.ts",
+    "dist/fragment.d.ts",
+    "dist/fragment.js",
     "src/lib/fragment.ts",
+    "dist/index.d.ts",
+    "dist/index.js",
     "src/lib/index.ts",
+    "dist/render.d.ts",
+    "dist/render.js",
     "src/lib/render.ts",
+    "dist/request.d.ts",
+    "dist/request.js",
     "src/lib/request.ts",
+    "dist/router.d.ts",
+    "dist/router.js",
     "src/lib/router.ts",
+    "dist/state.d.ts",
+    "dist/state.js",
     "src/lib/state.ts",
+    "dist/var.d.ts",
+    "dist/var.js",
+    "src/lib/var.ts",
+    "dist/vdom.d.ts",
+    "dist/vdom.js",
     "src/lib/vdom.ts",
+    "dist/vnode.d.ts",
+    "dist/vnode.js",
     "src/lib/vnode.ts"
   ]
 }

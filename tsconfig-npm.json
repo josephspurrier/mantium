@@ -15,8 +15,7 @@
     "declaration": true
   },
   "include": [
-    "src/lib/**/*",
-    "declaration.d.ts"
+    "src/lib/**/*"
   ],
   "exclude": [
     "node_modules",

@@ -45,4 +45,4 @@ This project supports these features:
 - [ ] Performance testing
 - [ ] Unit tests
 - [ ] Clean up the types
-- [ ] Launch on NPM to see how the process works
+- [x] Launch on NPM to see how the process works
