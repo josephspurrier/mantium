@@ -1,6 +1,5 @@
-import { useState } from '@/lib/state';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { z } from '@/lib/z';
+import { m } from 'src/lib';
 
 interface PostResponse {
   userId: number;
@@ -45,18 +44,18 @@ const useEffect = (f: () => void, when: string[] = []) => {
 };
 
 export const JSONRequest = (): JSX.Element => {
-  const [getPost, setPost] = useState({} as PostResponse);
-  const [getUser, setUser] = useState({} as UserReponse);
+  const [getPost, setPost] = m.useState({} as PostResponse);
+  const [getUser, setUser] = m.useState({} as UserReponse);
 
   useEffect(() => {
-    z.request<PostResponse>({
+    m.request<PostResponse>({
       url: 'https://jsonplaceholder.typicode.com/posts/5',
     })
       .then((data) => {
         console.log('post data:', data);
         setPost(data);
 
-        return z
+        return m
           .request<UserReponse>({
             url: `https://jsonplaceholder.typicode.com/users/${data.userId}`,
           })

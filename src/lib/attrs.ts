@@ -1,4 +1,4 @@
-import { redraw } from '@/lib/vdom';
+import { redraw } from './vdom';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const setSingleAttr = (elem: Node, name: string, value: any): void => {

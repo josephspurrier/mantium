@@ -1,7 +1,8 @@
-import { z } from '@/lib/z';
+import { state } from './var';
+import { redraw } from './vdom';
 
 export const resetStateCounter = (): void => {
-  z.state.globalStateCounter = -1;
+  state.globalStateCounter = -1;
 };
 
 // Use in closures to get and set the values. The first function it returns
@@ -11,18 +12,18 @@ export const resetStateCounter = (): void => {
 // const [isBool, setBool] = useState(false);
 // const [count, setCount] = z.useState(0);
 export const useState = function <T>(v: T): [() => T, (val: T) => void] {
-  z.state.globalStateCounter++;
-  const localCounter = z.state.globalStateCounter;
-  if (z.state.globalState[localCounter] === undefined) {
-    z.state.globalState[localCounter] = v;
+  state.globalStateCounter++;
+  const localCounter = state.globalStateCounter;
+  if (state.globalState[localCounter] === undefined) {
+    state.globalState[localCounter] = v;
   }
   return [
     (): T => {
-      return z.state.globalState[localCounter] as T;
+      return state.globalState[localCounter] as T;
     },
     (val: T): void => {
-      z.state.globalState[localCounter] = val;
-      z.redraw();
+      state.globalState[localCounter] = val;
+      redraw();
     },
   ];
 };

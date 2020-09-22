@@ -1,5 +1,5 @@
-import { appendChild } from '@/lib/vdom';
-import { addEventListeners, setAttrs } from '@/lib/attrs';
+import { appendChild } from './vdom';
+import { addEventListeners, setAttrs } from './attrs';
 
 // Create a Vnode for the current element and children. Any fragments will
 // have a tag of FRAGMENT created.

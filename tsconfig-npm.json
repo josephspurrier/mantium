@@ -23,8 +23,8 @@
     "declaration": true
   },
   "include": [
-    "*",
-    "src/**/*"
+    "src/lib/**/*",
+    "declaration.d.ts"
   ],
   "exclude": [
     "node_modules",

@@ -1,39 +1,39 @@
-import { createElementText, createFragment } from '@/lib/vnode';
-import { cleanState } from '@/lib/fragment';
-import { resetStateCounter } from '@/lib/state';
-import { updateAttrs } from '@/lib/attrs';
-import { z } from '@/lib/z';
+import { createElementText, createFragment } from './vnode';
+import { cleanState } from './fragment';
+import { resetStateCounter } from './state';
+import { updateAttrs } from './attrs';
+import { state } from './var';
 
 // Only allow redrawing once and queue up redrawing after if needed.
 export const redraw = (): void => {
   // If currently redrawing, then just queue another after.
-  if (z.state.isRedrawing) {
-    z.state.redrawAgain = true;
+  if (state.isRedrawing) {
+    state.redrawAgain = true;
     return;
   }
 
-  z.state.isRedrawing = true;
+  state.isRedrawing = true;
 
   resetStateCounter();
-  const rawDesiredState = (z.state.generateRawState() as unknown) as JSX.Vnode;
-  if (!z.state.currentState.tag) {
+  const rawDesiredState = (state.generateRawState() as unknown) as JSX.Vnode;
+  if (!state.currentState.tag) {
     //console.log('early-state:', rawDesiredState);
-    z.state.currentState = cleanState(rawDesiredState);
-    //console.log('desired state:', z.state.currentState);
-    updateElement(z.state.rootParent, z.state.currentState);
+    state.currentState = cleanState(rawDesiredState);
+    //console.log('desired state:', state.currentState);
+    updateElement(state.rootParent, state.currentState);
   } else {
     //console.log('early-state:', rawDesiredState);
     const desiredState = cleanState(rawDesiredState);
     //console.log('desired state:', desiredState);
-    updateElement(z.state.rootParent, desiredState, z.state.currentState);
-    z.state.currentState = desiredState;
+    updateElement(state.rootParent, desiredState, state.currentState);
+    state.currentState = desiredState;
   }
 
-  z.state.isRedrawing = false;
+  state.isRedrawing = false;
 
   // If done redrawing and need to redraw again, then trigger.
-  if (z.state.redrawAgain) {
-    z.state.redrawAgain = false;
+  if (state.redrawAgain) {
+    state.redrawAgain = false;
     redraw();
   }
 };

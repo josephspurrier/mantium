@@ -1,4 +1,4 @@
-import { createVnode } from '@/lib/vnode';
+import { createVnode } from './vnode';
 
 export interface FragmentAttrs {
   children: JSX.Vnode[];
@@ -52,3 +52,27 @@ const removeFragments = (vn: JSX.Vnode): JSX.Vnode => {
     children: cleanChildren(vn),
   } as JSX.Vnode;
 };
+
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace JSX {
+    interface ElementAttrs {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      [property: string]: any;
+    }
+    interface Vnode {
+      tag: string | ((attrs: JSX.ElementAttrs, ...children: Vnode[]) => Vnode);
+      attrs: ElementAttrs;
+      children: (string | Vnode)[];
+    }
+    interface IntrinsicElements {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      [elemName: string]: any;
+    }
+    type Element = Vnode;
+    interface ElementChildrenAttribute {
+      // eslint-disable-next-line @typescript-eslint/ban-types
+      children: {}; // specify children name to use
+    }
+  }
+}

@@ -1,11 +1,11 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { z } from '@/lib/z';
+import { m } from 'src/lib';
 
 let globalCounter = 0;
 
 export const State = (): JSX.Element => {
-  const [count, setCount] = z.useState(0);
-  const [count2, setCount2] = z.useState(5);
+  const [count, setCount] = m.useState(0);
+  const [count2, setCount2] = m.useState(5);
 
   let neverWork = 0;
   return (

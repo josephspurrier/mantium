@@ -1,6 +1,6 @@
-import { z } from '@/lib/z';
+import { redraw } from './vdom';
 
-interface Request {
+export interface Request {
   url: string;
 }
 
@@ -20,6 +20,6 @@ export const request = <T>(
       throw error;
     })
     .finally(() => {
-      z.redraw();
+      redraw();
     });
 };

@@ -1,9 +1,8 @@
-import { z } from '@/lib/z';
-import { useState } from '@/lib/state';
+import { m } from 'src/lib';
 
 export const RedrawButtons = (): JSX.Element => {
-  const [count, setCount] = useState(0);
-  const [count2, setCount2] = useState(0);
+  const [count, setCount] = m.useState(0);
+  const [count2, setCount2] = m.useState(0);
   return (
     <>
       <button
@@ -18,7 +17,7 @@ export const RedrawButtons = (): JSX.Element => {
 
       <button
         onclick={() => {
-          z.redraw();
+          m.redraw();
         }}
       >
         Manual Redraw
@@ -28,7 +27,7 @@ export const RedrawButtons = (): JSX.Element => {
         onclick={() => {
           setTimeout(() => {
             setCount2(count2() + 1);
-            z.redraw();
+            m.redraw();
           }, 1000);
         }}
       >

@@ -8,6 +8,8 @@
   },
   "author": "Joseph Spurrier",
   "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "start": "webpack-dev-server --open",
     "watch": "webpack --mode development --debug --output-pathinfo --watch",
@@ -16,7 +18,8 @@
     "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
     "lint-fix": "eslint --fix --ext .js,.jsx,.ts,.tsx .",
     "stylelint": "stylelint 'src/**/*.{css,scss,json}'",
-    "stylelint-fix": "stylelint --fix 'src/**/*.{css,scss}'"
+    "stylelint-fix": "stylelint --fix 'src/**/*.{css,scss}'",
+    "prepublish": "tsc -p tsconfig-npm.json"
   },
   "dependencies": {
     "@babel/plugin-transform-react-jsx": "^7.10.4",
