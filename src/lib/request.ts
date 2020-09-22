@@ -16,9 +16,6 @@ export const request = <T>(
         return Promise.reject(response);
       }
     })
-    .catch(function (error: Response) {
-      throw error;
-    })
     .finally(() => {
       redraw();
     });

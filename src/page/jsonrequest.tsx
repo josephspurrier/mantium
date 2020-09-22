@@ -55,10 +55,9 @@ export const JSONRequest = (): JSX.Element => {
         console.log('post data:', data);
         setPost(data);
 
-        return m
-          .request<UserReponse>({
-            url: `https://jsonplaceholder.typicode.com/users/${data.userId}`,
-          })
+        m.request<UserReponse>({
+          url: `https://jsonplaceholder.typicode.com/users/${data.userId}`,
+        })
           .then((udata) => {
             console.log('user data:', udata);
             setUser(udata);
