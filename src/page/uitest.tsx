@@ -5,6 +5,7 @@ import { FragLevel1 } from './component/fragments';
 import { State } from './component/state';
 import { RedrawButtons } from './component/redraw';
 import { BooleanFlip } from './component/boolean';
+import { Meiosis } from './component/meiosis';
 
 const Destructuring = ({ username }: { username: string }): JSX.Element => {
   return <div>Destructuring should show foo: {username}</div>;
@@ -141,6 +142,11 @@ export const UITestPage = (): JSX.Element => {
       <hr />
 
       <BooleanFlip />
+
+      <hr />
+
+      <Meiosis />
+      <Meiosis />
 
       <hr />
 
