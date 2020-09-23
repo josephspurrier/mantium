@@ -1,18 +1,19 @@
 import { m } from '../../lib';
 
+let globalCounter = 0;
+
 export const RedrawButtons = (): JSX.Element => {
   const [count, setCount] = m.useState(0);
-  const [count2, setCount2] = m.useState(0);
   return (
     <>
       <button
         onclick={() => {
           setTimeout(() => {
-            setCount(count() + 1);
+            setCount((prev) => prev + 1);
           }, 1000);
         }}
       >
-        1 Second Timer without Redraw ({count()} clicks)
+        1 Second Timer with setState [auto redraw] ({count} clicks)
       </button>
 
       <button
@@ -26,12 +27,12 @@ export const RedrawButtons = (): JSX.Element => {
       <button
         onclick={() => {
           setTimeout(() => {
-            setCount2(count2() + 1);
-            m.redraw();
+            globalCounter++;
           }, 1000);
         }}
       >
-        1 Second Timer with Redraw ({count2()} clicks)
+        1 Second Timer on Global Variable [requires manual redraw] (
+        {globalCounter} clicks)
       </button>
     </>
   );

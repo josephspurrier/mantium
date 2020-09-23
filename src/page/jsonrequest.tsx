@@ -52,14 +52,12 @@ export const JSONRequest = (): JSX.Element => {
       url: 'https://jsonplaceholder.typicode.com/posts/5',
     })
       .then((data) => {
-        console.log('post data:', data);
         setPost(data);
 
         m.request<UserReponse>({
           url: `https://jsonplaceholder.typicode.com/users/${data.userId}`,
         })
           .then((udata) => {
-            console.log('user data:', udata);
             setUser(udata);
           })
           .catch((error: Response) => {
@@ -76,10 +74,10 @@ export const JSONRequest = (): JSX.Element => {
       <a title='home' href='#/'>
         Back
       </a>
-      <h1>Title: {getPost().title}</h1>
-      <h2>By: {getUser().name}</h2>
-      <i>Post ID: {getPost().id}</i>
-      <p>{getPost().body}</p>
+      <h1>Title: {getPost.title}</h1>
+      <h2>By: {getUser.name}</h2>
+      <i>Post ID: {getPost.id}</i>
+      <p>{getPost.body}</p>
     </>
   );
 };

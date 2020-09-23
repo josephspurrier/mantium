@@ -20,14 +20,14 @@ export const State = (): JSX.Element => {
       <button
         onclick={() => {
           globalCounter++;
-          setCount(count() + 1);
+          setCount((prev) => prev + 1);
         }}
       >
         Increment Local + Global Variable
       </button>
       <button
         onclick={() => {
-          setCount2(count2() + 1);
+          setCount2((prev) => prev + 1);
         }}
       >
         Increment Local 2
@@ -43,8 +43,8 @@ export const State = (): JSX.Element => {
         Try Increment "Never counter" But Fail
       </button>
       <div>Global counter: {globalCounter}</div>
-      <div>Local counter: {count()}</div>
-      <div>Local counter 2: {count2()}</div>
+      <div>Local counter: {count}</div>
+      <div>Local counter 2: {count2}</div>
       <div>
         Never counter: {neverWork} (Closures with local variables without
         'useState' won't work with DOM updates. See the Console for output).

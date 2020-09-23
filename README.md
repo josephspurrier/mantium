@@ -38,6 +38,7 @@ This project supports these features:
 - [ ] Add useEffect to handle when to update (onLoad, on variable change, etc)
 - [x] Add redraw after request (doesn't alway work, especially with nested requested, but if useing useState then it will)
 - [x] Add redraw on setter from useState
+- [x] Allow useState to pass in function to get previous value
 - [x] Easy way to view output of generated code (`npm run build-clean`)
 - [ ] Lifecycle methods
 - [ ] Performance testing
@@ -71,12 +72,12 @@ export const BooleanFlip = (): JSX.Element => {
     <>
       <button
         onclick={() => {
-          setBool(!isBool());
+          setBool((prev) => !prev);
         }}
       >
         Change Boolean Value
       </button>
-      <div>Current value: {isBool()}</div>
+      <div>Current value: {isBool}</div>
     </>
   );
 };
@@ -150,17 +151,16 @@ import { m } from 'mantium';
 
 export const RedrawButtons = (): JSX.Element => {
   const [count, setCount] = m.useState(0);
-  const [count2, setCount2] = m.useState(0);
   return (
     <>
       <button
         onclick={() => {
           setTimeout(() => {
-            setCount(count() + 1);
+            setCount((prev) => prev + 1);
           }, 1000);
         }}
       >
-        1 Second Timer without Redraw ({count()} clicks)
+        1 Second Timer with setState [auto redraw] ({count} clicks)
       </button>
 
       <button
@@ -174,12 +174,12 @@ export const RedrawButtons = (): JSX.Element => {
       <button
         onclick={() => {
           setTimeout(() => {
-            setCount2(count2() + 1);
-            m.redraw();
+            globalCounter++;
           }, 1000);
         }}
       >
-        1 Second Timer with Redraw ({count2()} clicks)
+        1 Second Timer on Global Variable [requires manual redraw] (
+        {globalCounter} clicks)
       </button>
     </>
   );
@@ -245,10 +245,9 @@ export const JSONRequest = (): JSX.Element => {
       .then((data) => {
         setPost(data);
 
-        return m
-          .request<UserReponse>({
-            url: `https://jsonplaceholder.typicode.com/users/${data.userId}`,
-          })
+        m.request<UserReponse>({
+          url: `https://jsonplaceholder.typicode.com/users/${data.userId}`,
+        })
           .then((udata) => {
             setUser(udata);
           })
@@ -266,10 +265,10 @@ export const JSONRequest = (): JSX.Element => {
       <a title='home' href='#/'>
         Back
       </a>
-      <h1>Title: {getPost().title}</h1>
-      <h2>By: {getUser().name}</h2>
-      <i>Post ID: {getPost().id}</i>
-      <p>{getPost().body}</p>
+      <h1>Title: {getPost.title}</h1>
+      <h2>By: {getUser.name}</h2>
+      <i>Post ID: {getPost.id}</i>
+      <p>{getPost.body}</p>
     </>
   );
 };

@@ -7,12 +7,12 @@ export const BooleanFlip = (): JSX.Element => {
     <>
       <button
         onclick={() => {
-          setBool(!isBool());
+          setBool((prev) => !prev);
         }}
       >
         Change Boolean Value
       </button>
-      <div>Current value: {isBool()}</div>
+      <div>Current value: {isBool}</div>
     </>
   );
 };
