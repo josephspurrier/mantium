@@ -1,6 +1,6 @@
 # Mantium
 
-This library demonstrates how to use JSX without React. It can be used as a learning tool to understand the internals of front-end frameworks using functional components/closures instead of classes. Many of the constructs included are very similiar or near identical to React like `useState` and `useEffect`.
+This library demonstrates how to use JSX without React. It can be used as a learning tool to understand the internals of front-end frameworks using functional components/closures instead of classes. Many of the constructs included are very similiar/identical to [Mithril](https://mithril.js.org/) (routing, requests), [React](https://reactjs.org/) (`useState` and `useEffect`), and I'm sure other modern libraries.
 
 ## Installation
 
