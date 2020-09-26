@@ -72,6 +72,13 @@ This project supports these features:
 
 Sample code is [here](https://github.com/josephspurrier/mantium/blob/main/src/index.tsx). npm package is [here](https://www.npmjs.com/package/mantium).
 
+### Render Content
+
+```javascript
+m.render(document.body, 'hello world');
+m.render(document.body, true);
+```
+
 ### Routing
 
 ```typescript
@@ -103,6 +110,18 @@ export const BooleanFlip = (): JSX.Element => {
     </>
   );
 };
+
+m.render(document.body, BooleanFlip);
+```
+
+### Components without JSX
+
+```javascript
+function MainPage() {
+    return m.createElement('div', {}, 'hello world');
+}
+
+m.render(document.body, MainPage);
 ```
 
 ### Fragments
@@ -123,10 +142,28 @@ export const FragLevel2 = (): JSX.Element => {
   return (
     <>
       <div>Fragment level 2.</div>
-      <FragLevel3 />
     </>
   );
 };
+
+m.render(document.body, FragLevel1);
+```
+
+### Fragments without JSX
+
+```jsx
+function FragLevel1() {
+  return m.createElement('FRAGMENT', {},
+    m.createElement('div', {}, 'Fragment level 1.'),
+    m.createElement(FragLevel2));
+}
+
+function FragLevel2() {
+  return m.createElement('FRAGMENT', {},
+    m.createElement('div', {}, 'Fragment level 2.'));
+}
+
+m.render(document.body, FragLevel1);
 ```
 
 ### Passing Attributes and Children
@@ -206,6 +243,8 @@ export const RedrawButtons = (): JSX.Element => {
     </>
   );
 };
+
+m.render(document.body, RedrawButtons);
 ```
 
 ### Requests
@@ -294,6 +333,8 @@ export const JSONRequest = (): JSX.Element => {
     </>
   );
 };
+
+m.render(document.body, JSONRequest);
 ```
 
 ### Meiosis Pattern for State Management
@@ -354,4 +395,6 @@ export const Meiosis = (): JSX.Element => {
     </>
   );
 };
+
+m.render(document.body, Meiosis);
 ```
