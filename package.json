@@ -1,6 +1,6 @@
 {
   "name": "mantium",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "A client-side JavaScript/TypeScript library for building single page applications.",
   "repository": {
     "type": "git",
@@ -17,7 +17,7 @@
     "build-clean": "NODE_ENV=clean webpack -p",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
     "lint-fix": "eslint --fix --ext .js,.jsx,.ts,.tsx .",
-    "prepublish": "rm -rf ./dist && rollup -c rollup.config.es.js && rollup -c rollup.config.cjs.js"
+    "prepublishOnly": "rm -rf ./dist && rollup -c rollup.config.es.js && rollup -c rollup.config.cjs.js"
   },
   "dependencies": {
     "http-server": "^0.12.3"
