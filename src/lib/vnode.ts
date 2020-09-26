@@ -7,7 +7,7 @@ export const createVnode = (
   tag:
     | string
     | ((attrs: JSX.ElementAttrs, ...children: HTMLElement[]) => JSX.Vnode),
-  attrs: JSX.ElementAttrs,
+  attrs = {} as JSX.ElementAttrs,
   ...children: (JSX.Vnode | unknown)[]
 ): JSX.Vnode => {
   const getChildren = (

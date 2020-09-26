@@ -6,14 +6,13 @@ import { MainPage } from './page/main';
 import { Page2 } from './page/page2';
 import { UITestPage } from './page/uitest';
 
-const rootElem = document.createElement('div');
-rootElem.setAttribute('id', 'root');
-document.body.appendChild(rootElem);
-//z.render(rootElem, UITestPage);
+const root = document.createElement('div');
+root.setAttribute('id', 'root');
+document.body.appendChild(root);
 
 m.state.routerPrefix = '#';
-m.route(rootElem, '/', MainPage);
-m.route(rootElem, '/app', UITestPage);
-m.route(rootElem, '/page2', Page2);
-m.route(rootElem, '/jsonrequest', JSONRequest);
-m.route(rootElem, '/404', ErrorPage);
+m.route(root, '/', MainPage);
+m.route(root, '/app', UITestPage);
+m.route(root, '/page2', Page2);
+m.route(root, '/jsonrequest', JSONRequest);
+m.route(root, '/404', ErrorPage);

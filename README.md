@@ -9,7 +9,7 @@
 ```html
 <script src="https://unpkg.com/mantium/dist/index.js"></script>
 <script>
-    var m = mantium.m;
+    const m = mantium.m;
     m.render(document.body, "hello world");
 </script>
 ```
@@ -25,6 +25,7 @@ npm install mantium -D
 This project supports these features:
 
 - [x] Render function for JSX
+- [x] HyperScript support
 - [x] JSX using TypeScript (.tsx)
 - [ ] JSX using Babel (.jsx)
 - [x] JSX fragments
@@ -75,6 +76,8 @@ Sample code is [here](https://github.com/josephspurrier/mantium/blob/main/src/in
 ### Render Content
 
 ```javascript
+const m = mantium.m;
+
 m.render(document.body, 'hello world');
 m.render(document.body, true);
 ```
@@ -90,7 +93,7 @@ m.route(rootElem, '/app', UITestPage);
 m.route(rootElem, '/404', ErrorPage);
 ```
 
-### JSX Components
+### Components using JSX
 
 ```jsx
 import { m } from 'mantium';
@@ -114,11 +117,14 @@ export const BooleanFlip = (): JSX.Element => {
 m.render(document.body, BooleanFlip);
 ```
 
-### Components without JSX
+### Components using HyperScript
 
 ```javascript
+const m = mantium.m;
+const h = mantium.m.createElement;
+
 function MainPage() {
-    return m.createElement('div', {}, 'hello world');
+    return h('div', {}, 'hello world');
 }
 
 m.render(document.body, MainPage);
@@ -152,15 +158,18 @@ m.render(document.body, FragLevel1);
 ### Fragments without JSX
 
 ```jsx
+const m = mantium.m;
+const h = mantium.m.createElement;
+
 function FragLevel1() {
-  return m.createElement('FRAGMENT', {},
-    m.createElement('div', {}, 'Fragment level 1.'),
-    m.createElement(FragLevel2));
+  return h('FRAGMENT', {},
+    h('div', {}, 'Fragment level 1.'),
+    h(FragLevel2));
 }
 
 function FragLevel2() {
-  return m.createElement('FRAGMENT', {},
-    m.createElement('div', {}, 'Fragment level 2.'));
+  return h('FRAGMENT', {},
+    h('div', {}, 'Fragment level 2.'));
 }
 
 m.render(document.body, FragLevel1);
