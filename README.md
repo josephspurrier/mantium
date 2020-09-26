@@ -1,8 +1,10 @@
 # Mantium
 
-**This is a WIP while testing how JSX works without React. Don't use this in production - it's designed as a learning tool to understand the internals of front-end frameworks.**
+This library demonstrates how to use JSX without React. It can be used as a learning tool to understand the internals of front-end frameworks using functional components/closures instead of classes. Many of the constructs included are very similiar or near identical to React like `useState` and `useEffect`.
 
 ## Installation
+
+You can use either via a CDN or via a node module. Both JavaScript and TypeScript are supported. The types are included in the node module.
 
 ### CDN
 
@@ -16,13 +18,21 @@
 
 ### NPM
 
+I you need a webpack setup for TypeScript with ESLint that supports JSX, you can use this [template](https://github.com/josephspurrier/typescript-template).
+
 ```bash
-npm install mantium -D
+npm install mantium -S
+```
+
+```typescript
+import { m } from 'mantium';
+
+m.render(document.body, 'hello world');
 ```
 
 ## Features
 
-This project supports these features:
+This library supports these features:
 
 - [x] Render function for JSX
 - [x] HyperScript support
