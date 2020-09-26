@@ -65,6 +65,8 @@ This project supports these features:
 - [ ] Unit tests
 - [ ] Clean up the types
 - [x] Launch on NPM to see how the process works
+- [x] Publish on NPM in standalone JavaScript file format (Rollup)
+- [x] Publish on NPM in CommonJS format (Rollup)
 
 ## Code Samples
 
