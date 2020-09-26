@@ -2,17 +2,18 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     "target": "es5",
-    "module": "UMD",
+    "module": "ES2015",
     "esModuleInterop": true,
     "baseUrl": "./",
     "strict": true,
-    "outDir": "./dist/",
+    "declarationDir": "./dist/types",
     "jsx": "react",
     "jsxFactory": "m.createElement",
     "jsxFragmentFactory": "m.fragment",
     "allowJs": true,
     "checkJs": true,
-    "declaration": true
+    "declaration": true,
+    "rootDir": "./src/lib"
   },
   "include": [
     "src/lib/**/*"
