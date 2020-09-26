@@ -2,6 +2,26 @@
 
 **This is a WIP while testing how JSX works without React. Don't use this in production - it's designed as a learning tool to understand the internals of front-end frameworks.**
 
+## Installation
+
+### CDN
+
+```html
+<script src="https://unpkg.com/mantium/dist/index.js"></script>
+<script>
+    var m = mantium.m;
+    m.render(document.body, "hello world");
+</script>
+```
+
+### NPM
+
+```bash
+npm install mantium -D
+```
+
+## Features
+
 This project supports these features:
 
 - [x] Render function for JSX
@@ -46,11 +66,11 @@ This project supports these features:
 - [ ] Clean up the types
 - [x] Launch on NPM to see how the process works
 
-# Code Samples
+## Code Samples
 
 Sample code is [here](https://github.com/josephspurrier/mantium/blob/main/src/index.tsx). npm package is [here](https://www.npmjs.com/package/mantium).
 
-## Routing
+### Routing
 
 ```typescript
 import { m } from 'mantium';
@@ -61,7 +81,7 @@ m.route(rootElem, '/app', UITestPage);
 m.route(rootElem, '/404', ErrorPage);
 ```
 
-## JSX Components
+### JSX Components
 
 ```jsx
 import { m } from 'mantium';
@@ -83,7 +103,7 @@ export const BooleanFlip = (): JSX.Element => {
 };
 ```
 
-## Fragments
+### Fragments
 
 ```jsx
 import { m } from 'mantium';
@@ -107,7 +127,7 @@ export const FragLevel2 = (): JSX.Element => {
 };
 ```
 
-## Passing Attributes and Children
+### Passing Attributes and Children
 
 ```jsx
 import { m } from 'mantium';
@@ -144,7 +164,7 @@ document.body.appendChild(rootElem);
 m.render(rootElem, App);
 ```
 
-## Redrawing and Event Handlers
+### Redrawing and Event Handlers
 
 ```jsx
 import { m } from 'mantium';
@@ -186,7 +206,7 @@ export const RedrawButtons = (): JSX.Element => {
 };
 ```
 
-## Requests
+### Requests
 
 
 ```jsx
@@ -274,7 +294,7 @@ export const JSONRequest = (): JSX.Element => {
 };
 ```
 
-## Meiosis Pattern for State Management
+### Meiosis Pattern for State Management
 
 You can read about it [here](https://meiosis.js.org/).
 

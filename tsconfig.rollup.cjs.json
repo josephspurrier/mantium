@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "target": "es5",
+    "module": "ES2015",
+    "esModuleInterop": true,
+    "baseUrl": "./",
+    "strict": true,
+    "outDir": "./dist/cjs/",
+    "jsx": "react",
+    "jsxFactory": "m.createElement",
+    "jsxFragmentFactory": "m.fragment",
+    "allowJs": true,
+    "checkJs": true,
+    "declaration": false,
+    "rootDir": "./src/lib"
+  },
+  "include": [
+    "src/lib/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts"
+  ]
+}
