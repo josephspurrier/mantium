@@ -1,5 +1,3 @@
-import { redraw } from './vdom';
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const setSingleAttr = (elem: Node, name: string, value: any): void => {
   if (isCustomAttrs(name)) {
@@ -43,6 +41,7 @@ const extractEventName = (name: string) => {
 export const addEventListeners = (
   elem: HTMLElement,
   attrs: JSX.ElementAttrs,
+  redrawer?: () => void,
 ): void => {
   Object.keys(attrs).forEach((name) => {
     if (isEventAttrs(name)) {
@@ -53,7 +52,9 @@ export const addEventListeners = (
         // TODO: See if this is the best way to do redraws because it would
         // be good to wait until the listener is finished. Maybe a race
         // condition.
-        redraw();
+        if (redrawer) {
+          redrawer();
+        }
       });
     }
   });
