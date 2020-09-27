@@ -19,5 +19,3 @@ export const m = {
 };
 
 export const h = createVnode;
-
-module.exports = m;

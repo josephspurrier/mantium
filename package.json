@@ -8,8 +8,11 @@
   },
   "author": "Joseph Spurrier",
   "license": "MIT",
-  "main": "dist/cjs/index.js",
-  "types": "dist/types/index.d.ts",
+  "main": "dist/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "browser": "dist/index.min.js",
+  "unpkg": "dist/index.min.js",
   "scripts": {
     "start": "webpack-dev-server --open",
     "watch": "webpack --mode development --debug --output-pathinfo --watch",
@@ -17,7 +20,7 @@
     "build-clean": "NODE_ENV=clean webpack -p",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
     "lint-fix": "eslint --fix --ext .js,.jsx,.ts,.tsx .",
-    "prepublishOnly": "rm -rf ./dist && rollup -c rollup.config.es.js && rollup -c rollup.config.cjs.js"
+    "prepublishOnly": "rm -rf ./dist && rollup -c rollup.config.js && tsc -p tsconfig.lib.json"
   },
   "dependencies": {},
   "devDependencies": {
@@ -50,28 +53,7 @@
     "webpack-dev-server": "^3.11.0"
   },
   "files": [
-    "dist/index.js",
-    "dist/cjs/index.js",
-    "dist/types/attrs.d.ts",
-    "src/lib/attrs.ts",
-    "dist/types/fragment.d.ts",
-    "src/lib/fragment.ts",
-    "dist/types/index.d.ts",
-    "dist/index.min.js",
-    "src/lib/index.ts",
-    "dist/types/render.d.ts",
-    "src/lib/render.ts",
-    "dist/types/request.d.ts",
-    "src/lib/request.ts",
-    "dist/types/router.d.ts",
-    "src/lib/router.ts",
-    "dist/types/state.d.ts",
-    "src/lib/state.ts",
-    "dist/types/usestate.d.ts",
-    "src/lib/usestate.ts",
-    "dist/types/vdom.d.ts",
-    "src/lib/vdom.ts",
-    "dist/types/vnode.d.ts",
-    "src/lib/vnode.ts"
+    "src/lib",
+    "dist"
   ]
 }

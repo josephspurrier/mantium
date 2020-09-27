@@ -112,20 +112,3 @@ const changed = function (
 
   return false;
 };
-
-export const appendChild = (
-  parent: HTMLElement | DocumentFragment,
-  child: (string | JSX.Vnode)[] | JSX.Vnode,
-): void => {
-  if (Array.isArray(child)) {
-    child.forEach((nestedChild) => {
-      if ((nestedChild as JSX.Vnode).tag) {
-        appendChild(parent, nestedChild as JSX.Vnode);
-      } else {
-        parent.appendChild(document.createTextNode(String(nestedChild)));
-      }
-    });
-  } else {
-    parent.appendChild(createFragment(child));
-  }
-};

@@ -1,4 +1,3 @@
-import { appendChild } from './vdom';
 import { addEventListeners, setAttrs } from './attrs';
 
 // Create a Vnode for the current element and children. Any fragments will
@@ -88,4 +87,21 @@ export const createFragment = (node: string | JSX.Vnode): DocumentFragment => {
 
   frag.appendChild(document.createTextNode(node.toString()));
   return frag;
+};
+
+export const appendChild = (
+  parent: HTMLElement | DocumentFragment,
+  child: (string | JSX.Vnode)[] | JSX.Vnode,
+): void => {
+  if (Array.isArray(child)) {
+    child.forEach((nestedChild) => {
+      if ((nestedChild as JSX.Vnode).tag) {
+        appendChild(parent, nestedChild as JSX.Vnode);
+      } else {
+        parent.appendChild(document.createTextNode(String(nestedChild)));
+      }
+    });
+  } else {
+    parent.appendChild(createFragment(child));
+  }
 };
