@@ -8,7 +8,7 @@ interface PostResponse {
   body: string;
 }
 
-interface UserReponse {
+interface UserResponse {
   id: number;
   name: string;
   username: string;
@@ -45,24 +45,21 @@ const useEffect = (f: () => void, when: string[] = []) => {
 
 export const JSONRequest = (): JSX.Element => {
   const [getPost, setPost] = m.useState({} as PostResponse);
-  const [getUser, setUser] = m.useState({} as UserReponse);
+  const [getUser, setUser] = m.useState({} as UserResponse);
 
   useEffect(() => {
     m.request<PostResponse>({
       url: 'https://jsonplaceholder.typicode.com/posts/5',
     })
-      .then((data) => {
+      .then((data: PostResponse) => {
         setPost(data);
 
-        m.request<UserReponse>({
+        return m.request<UserResponse>({
           url: `https://jsonplaceholder.typicode.com/users/${data.userId}`,
-        })
-          .then((udata) => {
-            setUser(udata);
-          })
-          .catch((error: Response) => {
-            console.warn(error);
-          });
+        });
+      })
+      .then((udata: UserResponse) => {
+        setUser(udata);
       })
       .catch((error: Response) => {
         console.warn(error);
