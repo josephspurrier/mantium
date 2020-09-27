@@ -75,6 +75,8 @@ This library supports these features:
 - [x] Easy way to view output of generated code (`npm run build-clean`)
 - [ ] Lifecycle methods
 - [ ] Performance testing
+- [x] Add Jest
+- [x] Generate test coverage
 - [ ] Unit tests
 - [ ] Clean up the types
 - [x] Launch on NPM to see how the process works
