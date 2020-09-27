@@ -17,5 +17,3 @@ export const m = {
   route: route,
   request: request,
 };
-
-export const h = createVnode;

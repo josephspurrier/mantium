@@ -1,8 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { m, h } from '../lib';
+import { m } from '../lib';
+
+const h = m.createElement;
 
 const SingleDiv = (): JSX.Element => {
-  return h('div', {}, 'This is a JSX div.');
+  return h('div', {}, 'This is a returning div.');
 };
 
 export const HyperScript = (): JSX.Element => {
@@ -15,7 +17,7 @@ export const HyperScript = (): JSX.Element => {
 
       <SingleDiv />
 
-      {h('div', {}, 'This is a HyperScript div.')}
+      {h('div', {}, 'This is a non returning div.')}
     </>
   );
 };
