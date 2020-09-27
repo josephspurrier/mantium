@@ -1,4 +1,4 @@
-import { setAttrs, addEventListeners } from '../lib/attrs';
+import { setAttrs, addEventListeners, updateAttrs } from '../lib/attrs';
 
 test('set attribute class', () => {
   const elem = document.createElement('div');
@@ -42,4 +42,53 @@ test('set attribute click true', () => {
   elem.click();
   expect(elem.outerHTML).toBe(`<button></button>`);
   expect(clicked).toBe(true);
+});
+
+test('remove attribute boolean', () => {
+  const elem = document.createElement('button');
+  let clicked = 1;
+  const oldAttrs = {
+    name: 'foo',
+    required: true,
+    grade: 1,
+    className: 'blue',
+    onclick: () => {
+      clicked++;
+    },
+  };
+  const newAttrs = { name: 'bar', required: false };
+  setAttrs(elem, oldAttrs);
+  addEventListeners(elem, oldAttrs);
+  elem.click();
+  expect(elem.outerHTML).toBe(
+    `<button name="foo" required="" grade="1" class="blue"></button>`,
+  );
+  expect(clicked).toBe(2);
+  updateAttrs(elem, newAttrs, oldAttrs);
+  elem.click();
+  expect(elem.outerHTML).toBe(`<button name="bar"></button>`);
+  // FIXME: This needs to be 3 instead of 2. Need to add code to remove event
+  // handlers.
+  expect(clicked).toBe(3);
+});
+
+test('event redrawer', () => {
+  const elem = document.createElement('button');
+  let clicked = false;
+  let redrew = false;
+  addEventListeners(
+    elem,
+    {
+      onclick: () => {
+        clicked = true;
+      },
+    },
+    () => {
+      redrew = true;
+    },
+  );
+  elem.click();
+  expect(elem.outerHTML).toBe(`<button></button>`);
+  expect(clicked).toBe(true);
+  expect(redrew).toBe(true);
 });
