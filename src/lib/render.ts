@@ -1,5 +1,5 @@
 import { redraw } from './vdom';
-import { state } from './var';
+import { state } from './state';
 import { createVnode } from './vnode';
 
 // Set the function to call to generate the Vnode and then trigger a redraw.

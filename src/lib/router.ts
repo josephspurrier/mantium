@@ -1,5 +1,5 @@
 import { render } from './render';
-import { state } from './var';
+import { state } from './state';
 
 export interface RouteList {
   [property: string]: () => JSX.Element;

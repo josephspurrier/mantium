@@ -1,8 +1,8 @@
 import { createElementText, createFragment } from './vnode';
 import { cleanState } from './fragment';
-import { resetStateCounter } from './state';
+import { resetStateCounter } from './usestate';
 import { updateAttrs } from './attrs';
-import { state } from './var';
+import { state } from './state';
 
 // Only allow redrawing once and queue up redrawing after if needed.
 export const redraw = (): void => {
