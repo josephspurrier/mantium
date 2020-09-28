@@ -2,6 +2,7 @@ import { redraw } from './vdom';
 
 export interface Request {
   url: string;
+  disableRedraw?: boolean;
 }
 
 export const request = <T>(
@@ -17,6 +18,8 @@ export const request = <T>(
       }
     })
     .finally(() => {
-      redraw();
+      if (!req.disableRedraw) {
+        redraw();
+      }
     });
 };
