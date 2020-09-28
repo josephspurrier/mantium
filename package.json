@@ -22,6 +22,7 @@
     "lint-fix": "eslint --fix --ext .js,.jsx,.ts,.tsx .",
     "prepublishOnly": "rm -rf ./dist && rollup -c rollup.config.js && tsc -p tsconfig.lib.json",
     "test": "jest",
+    "test-watch": "jest --watch",
     "cover": "jest --coverage && open coverage/lcov-report/index.html"
   },
   "dependencies": {},
