@@ -12,8 +12,8 @@
   // Use the built-in formatter for files like JSON.
   "editor.formatOnSave": true,
   // When importing modules, don't use relative paths, use absolute paths.
-  //"javascript.preferences.importModuleSpecifier": "non-relative",
-  //"typescript.preferences.importModuleSpecifier": "non-relative",
+  "javascript.preferences.importModuleSpecifier": "relative",
+  "typescript.preferences.importModuleSpecifier": "relative",
   // On save, autofix with ESLint and stylelint.
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true,

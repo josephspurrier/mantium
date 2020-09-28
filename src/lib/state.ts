@@ -1,24 +1,45 @@
 import { RouteList } from './router';
 
-export const state = {
+export interface LibraryState {
   // Root element where Vnodes are rendered.
-  rootParent: {} as HTMLElement,
+  rootParent: HTMLElement;
   // Current state of the Vnode data.
-  currentState: {} as JSX.Vnode,
+  currentState: JSX.Vnode;
   // Generate the new state.
-  generateRawState: {} as () => JSX.Element,
+  generateRawState: () => JSX.Element;
   // Storage for local variables.
-  globalState: [] as unknown[],
+  globalState: unknown[];
   // Counter for local variables.
-  globalStateCounter: -1,
+  globalStateCounter: number;
   // Router state.
-  routerActive: false,
+  routerActive: boolean;
   // Router prefix.
-  routerPrefix: '#',
+  routerPrefix: string;
   // List of routes.
-  routes: {} as RouteList,
+  routes: RouteList;
   // Determine if currently redrawing;
-  isRedrawing: false,
+  isRedrawing: boolean;
   // If redrawing, then redraw again after.
-  redrawAgain: false,
+  redrawAgain: boolean;
+}
+
+const newState = (): LibraryState => {
+  return {
+    rootParent: {} as HTMLElement,
+    currentState: {} as JSX.Vnode,
+    generateRawState: {} as () => JSX.Element,
+    globalState: [] as unknown[],
+    globalStateCounter: -1,
+    routerActive: false,
+    routerPrefix: '#',
+    routes: {} as RouteList,
+    isRedrawing: false,
+    redrawAgain: false,
+  };
+};
+
+export let state = newState();
+
+export const resetState = (): void => {
+  state = newState();
 };

@@ -5,11 +5,6 @@ export const resetStateCounter = (): void => {
   state.globalStateCounter = -1;
 };
 
-export const resetState = (): void => {
-  resetStateCounter();
-  state.globalState = [];
-};
-
 // Use in closures to get and set the values. The first value it returns
 // is the getter and the second function is the setter. Like React, it is
 // ordered and it's a generic so the default value can be set as a parameters.
