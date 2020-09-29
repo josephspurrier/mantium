@@ -48,9 +48,9 @@ const updateElement = function (
   if (oldNode === undefined) {
     if (typeof newNode === 'string') {
       parent.appendChild(createElementText(newNode));
-      return 0;
+    } else {
+      parent.appendChild(createDocFragment(newNode));
     }
-    parent.appendChild(createDocFragment(newNode));
   } else if (newNode === undefined) {
     parent.removeChild(parent.childNodes[index]);
     return 1;

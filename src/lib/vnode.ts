@@ -50,13 +50,11 @@ export const createElementText = (node: string): Text => {
   return document.createTextNode(node);
 };
 
-export const createDocFragment = (
-  node: string | JSX.Vnode,
-): DocumentFragment => {
+export const createDocFragment = (node: JSX.Vnode): DocumentFragment => {
   const frag = document.createDocumentFragment();
 
   // Support functions (closures).
-  const vnode = node as JSX.Vnode;
+  const vnode = node;
   const f = vnode.tag as (
     attrs: JSX.ElementAttrs,
     ...children: JSX.Vnode[]
@@ -65,43 +63,36 @@ export const createDocFragment = (
     node = f({ ...vnode.attrs, children: vnode.children });
     if (Array.isArray(node)) {
       node.forEach(function (item: string[] | JSX.Vnode | JSX.Vnode[]) {
-        appendChild(frag, item);
+        appendChildToNode(frag, item);
       });
       return frag;
     }
     return createDocFragment(node);
+  } else if (vnode.tag === 'ROOTFRAGMENT') {
+    appendChildToNode(frag, vnode.children);
+  } else {
+    const elem = document.createElement(vnode.tag as string);
+    setAttrs(elem, vnode.attrs);
+    addEventListeners(elem, vnode.attrs, () => {
+      redraw();
+    });
+    // TODO: Determine why one article suggested to use:
+    // elem.appendChild.bind(elem)
+    appendChildToNode(elem, vnode.children);
+    frag.appendChild(elem);
   }
 
-  if (vnode && typeof vnode.tag === 'string') {
-    if (vnode.tag === 'ROOTFRAGMENT') {
-      appendChild(frag, vnode.children);
-    } else {
-      const elem = document.createElement(vnode.tag);
-      setAttrs(elem, vnode.attrs);
-      addEventListeners(elem, vnode.attrs, () => {
-        redraw();
-      });
-      // TODO: Determine why one article suggested to use:
-      // elem.appendChild.bind(elem)
-      appendChild(elem, vnode.children);
-      frag.appendChild(elem);
-    }
-
-    return frag;
-  }
-
-  frag.appendChild(document.createTextNode(node.toString()));
   return frag;
 };
 
-export const appendChild = (
+const appendChildToNode = (
   parent: HTMLElement | DocumentFragment,
   child: (string | JSX.Vnode)[] | JSX.Vnode,
 ): void => {
   if (Array.isArray(child)) {
     child.forEach((nestedChild) => {
       if ((nestedChild as JSX.Vnode).tag) {
-        appendChild(parent, nestedChild as JSX.Vnode);
+        appendChildToNode(parent, nestedChild as JSX.Vnode);
       } else {
         parent.appendChild(document.createTextNode(String(nestedChild)));
       }
