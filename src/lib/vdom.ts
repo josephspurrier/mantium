@@ -101,13 +101,10 @@ const changed = function (
     (node1 as JSX.Vnode).attrs.forceUpdate
   ) {
     return true;
-  } else if (typeof node1 === 'string' && node1 !== node2) {
-    return true;
   } else if (typeof node1 !== 'string' && typeof node2 !== 'string') {
     if (node1.tag !== node2.tag) {
       return true;
     }
-    return false;
   }
 
   return false;
