@@ -50,7 +50,9 @@ export const createElementText = (node: string): Text => {
   return document.createTextNode(node);
 };
 
-export const createFragment = (node: string | JSX.Vnode): DocumentFragment => {
+export const createDocFragment = (
+  node: string | JSX.Vnode,
+): DocumentFragment => {
   const frag = document.createDocumentFragment();
 
   // Support functions (closures).
@@ -67,7 +69,7 @@ export const createFragment = (node: string | JSX.Vnode): DocumentFragment => {
       });
       return frag;
     }
-    return createFragment(node);
+    return createDocFragment(node);
   }
 
   if (vnode && typeof vnode.tag === 'string') {
@@ -105,6 +107,6 @@ export const appendChild = (
       }
     });
   } else {
-    parent.appendChild(createFragment(child));
+    parent.appendChild(createDocFragment(child));
   }
 };

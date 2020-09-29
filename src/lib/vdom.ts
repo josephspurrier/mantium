@@ -1,4 +1,4 @@
-import { createElementText, createFragment } from './vnode';
+import { createElementText, createDocFragment } from './vnode';
 import { cleanState } from './fragment';
 import { resetStateCounter } from './usestate';
 import { updateAttrs } from './attrs';
@@ -50,7 +50,7 @@ const updateElement = function (
       parent.appendChild(createElementText(newNode));
       return 0;
     }
-    parent.appendChild(createFragment(newNode));
+    parent.appendChild(createDocFragment(newNode));
   } else if (newNode === undefined) {
     parent.removeChild(parent.childNodes[index]);
     return 1;
@@ -62,7 +62,7 @@ const updateElement = function (
     if (typeof newNode === 'string') {
       parent.replaceChild(createElementText(newNode), parent.childNodes[index]);
     } else {
-      parent.replaceChild(createFragment(newNode), parent.childNodes[index]);
+      parent.replaceChild(createDocFragment(newNode), parent.childNodes[index]);
     }
   } else {
     const newVnode = newNode as JSX.Vnode;
