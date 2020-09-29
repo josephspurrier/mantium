@@ -77,7 +77,8 @@ This library supports these features:
 - [ ] Performance testing
 - [x] Add Jest
 - [x] Generate test coverage
-- [ ] Unit tests
+- [x] Unit tests
+- [ ] Fix bug when going to JSON request page and then back to the UI Testing Page
 - [ ] Clean up the types
 - [x] Launch on NPM to see how the process works
 - [x] Publish on NPM in standalone JavaScript file format (Rollup)
