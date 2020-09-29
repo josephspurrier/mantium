@@ -61,7 +61,7 @@ declare global {
       [property: string]: any;
     }
     interface Vnode {
-      tag: string | ((attrs: JSX.ElementAttrs, ...children: Vnode[]) => Vnode);
+      tag: string;
       attrs: ElementAttrs;
       children: (string | Vnode)[];
     }

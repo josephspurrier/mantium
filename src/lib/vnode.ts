@@ -52,33 +52,17 @@ export const createElementText = (node: string): Text => {
 
 export const createDocFragment = (node: JSX.Vnode): DocumentFragment => {
   const frag = document.createDocumentFragment();
-
-  // Support functions (closures).
-  const vnode = node;
-  const f = vnode.tag as (
-    attrs: JSX.ElementAttrs,
-    ...children: JSX.Vnode[]
-  ) => JSX.Vnode;
-  if (typeof f === 'function') {
-    node = f({ ...vnode.attrs, children: vnode.children });
-    if (Array.isArray(node)) {
-      node.forEach(function (item: string[] | JSX.Vnode | JSX.Vnode[]) {
-        appendChildToNode(frag, item);
-      });
-      return frag;
-    }
-    return createDocFragment(node);
-  } else if (vnode.tag === 'ROOTFRAGMENT') {
-    appendChildToNode(frag, vnode.children);
+  if (node.tag === 'ROOTFRAGMENT') {
+    appendChildToNode(frag, node.children);
   } else {
-    const elem = document.createElement(vnode.tag as string);
-    setAttrs(elem, vnode.attrs);
-    addEventListeners(elem, vnode.attrs, () => {
+    const elem = document.createElement(node.tag);
+    setAttrs(elem, node.attrs);
+    addEventListeners(elem, node.attrs, () => {
       redraw();
     });
     // TODO: Determine why one article suggested to use:
     // elem.appendChild.bind(elem)
-    appendChildToNode(elem, vnode.children);
+    appendChildToNode(elem, node.children);
     frag.appendChild(elem);
   }
 
