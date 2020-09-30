@@ -29,6 +29,10 @@ export interface LibraryState {
   isRedrawing: boolean;
   // If redrawing, then redraw again after.
   redrawAgain: boolean;
+  // Redraw counter to ensure loops don't occur.
+  redrawCounter: number;
+  // Tracking when rendering.
+  isRendering: boolean;
 }
 
 const newState = (): LibraryState => {
@@ -43,6 +47,8 @@ const newState = (): LibraryState => {
     routes: {} as RouteList,
     isRedrawing: false,
     redrawAgain: false,
+    redrawCounter: 0,
+    isRendering: false,
   };
 };
 

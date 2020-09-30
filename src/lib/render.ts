@@ -7,6 +7,10 @@ export const render = (
   parent: HTMLElement,
   child: string | number | boolean | (() => JSX.Element),
 ): void => {
+  if (state.isRendering) {
+    console.warn('Should not be calling render() from inside of render().');
+    return;
+  }
   state.rootParent = parent;
   if (typeof child === 'function') {
     state.generateRawState = child as () => JSX.Element;
@@ -15,5 +19,9 @@ export const render = (
       return createVnode('ROOTFRAGMENT', {}, String(child));
     };
   }
-  redraw();
+  state.redrawCounter = 0;
+  state.isRendering = true;
+  redraw('render');
+  state.isRendering = false;
+  state.redrawCounter = 0;
 };

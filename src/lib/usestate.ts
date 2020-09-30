@@ -42,7 +42,7 @@ export const useState = function <T>(
         state.globalState[currentURL()][localCounter] = val;
       }
 
-      redraw();
+      redraw('useState');
     },
   ];
 };

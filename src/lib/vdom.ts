@@ -4,11 +4,39 @@ import { resetStateCounter } from './usestate';
 import { updateAttrs } from './attrs';
 import { state } from './state';
 
-// Only allow redrawing once and queue up redrawing after if needed.
-export const redraw = (): void => {
-  // If currently redrawing, then just queue another after.
+// Redraw, but watch out for loops.
+export const redraw = (origin = ''): void => {
+  // Don't allow a redraw if the page is still rendering.
+  if (state.isRendering && origin !== 'render') {
+    console.warn(
+      'Should not be redrawing before the page is done loading. ' +
+        'Ensure there is no render() call outside of a useEffect(). ' +
+        'Redrawing stopped.',
+    );
+    return;
+  }
+
+  // If currently redrawing, then warn about redrawing and return;
   if (state.isRedrawing) {
-    state.redrawAgain = true;
+    console.warn(
+      'Should not be calling redraw() inside of an event that triggers a redraw().',
+    );
+    return;
+  }
+
+  // Prevent loops except when an event is clicked.
+  if (origin !== 'eventDispatch' && origin !== 'useState') {
+    state.redrawCounter++;
+  }
+
+  // If a loop exceeds 100, then it's probably an issue.
+  const redrawLimit = 100;
+  if (state.redrawCounter >= redrawLimit) {
+    if (state.redrawCounter === redrawLimit) {
+      console.warn(`Should not be redrawing more than ${redrawLimit} times.`);
+      // Ensure the message only shows up once.
+      state.redrawCounter++;
+    }
     return;
   }
 
@@ -17,14 +45,10 @@ export const redraw = (): void => {
   resetStateCounter();
   const rawDesiredState = (state.generateRawState() as unknown) as JSX.Vnode;
   if (!state.currentState.tag) {
-    //console.log('early-state:', rawDesiredState);
     state.currentState = cleanState(rawDesiredState);
-    //console.log('desired state:', state.currentState);
     updateElement(state.rootParent, state.currentState);
   } else {
-    //console.log('early-state:', rawDesiredState);
     const desiredState = cleanState(rawDesiredState);
-    //console.log('desired state:', desiredState);
     updateElement(state.rootParent, desiredState, state.currentState);
     state.currentState = desiredState;
   }
@@ -34,7 +58,7 @@ export const redraw = (): void => {
   // If done redrawing and need to redraw again, then trigger.
   if (state.redrawAgain) {
     state.redrawAgain = false;
-    redraw();
+    redraw('redrawAgain');
   }
 };
 

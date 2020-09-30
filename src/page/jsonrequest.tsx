@@ -32,39 +32,39 @@ interface UserResponse {
   };
 }
 
-let alreadyRan = false;
+// let alreadyRan = false;
 
-const useEffect = (f: () => void, when: string[] = []) => {
-  if (when.length === 0) {
-    if (!alreadyRan) {
-      alreadyRan = true;
-      f();
-    }
-  }
-};
+// const useEffect = (f: () => void, when: string[] = []) => {
+//   if (when.length === 0) {
+//     if (!alreadyRan) {
+//       alreadyRan = true;
+//       f();
+//     }
+//   }
+// };
 
 export const JSONRequest = (): JSX.Element => {
   const [getPost, setPost] = m.useState({} as PostResponse);
   const [getUser, setUser] = m.useState({} as UserResponse);
 
-  useEffect(() => {
-    m.request<PostResponse>({
-      url: 'https://jsonplaceholder.typicode.com/posts/5',
-    })
-      .then((data: PostResponse) => {
-        setPost(data);
+  //useEffect(() => {
+  m.request<PostResponse>({
+    url: 'https://jsonplaceholder.typicode.com/posts/5',
+  })
+    .then((data: PostResponse) => {
+      setPost(data);
 
-        return m.request<UserResponse>({
-          url: `https://jsonplaceholder.typicode.com/users/${data.userId}`,
-        });
-      })
-      .then((udata: UserResponse) => {
-        setUser(udata);
-      })
-      .catch((error: Response) => {
-        console.warn(error);
+      return m.request<UserResponse>({
+        url: `https://jsonplaceholder.typicode.com/users/${data.userId}`,
       });
-  });
+    })
+    .then((udata: UserResponse) => {
+      setUser(udata);
+    })
+    .catch((error: Response) => {
+      console.warn(error);
+    });
+  //});
 
   return (
     <>

@@ -58,7 +58,7 @@ export const createDocFragment = (node: JSX.Vnode): DocumentFragment => {
     const elem = document.createElement(node.tag);
     setAttrs(elem, node.attrs);
     addEventListeners(elem, node.attrs, () => {
-      redraw();
+      redraw('eventDispatch');
     });
     // TODO: Determine why one article suggested to use:
     // elem.appendChild.bind(elem)

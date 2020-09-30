@@ -19,7 +19,7 @@ export const request = <T>(
     })
     .finally(() => {
       if (!req.disableRedraw) {
-        redraw();
+        redraw('request');
       }
     });
 };

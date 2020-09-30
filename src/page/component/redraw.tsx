@@ -18,7 +18,7 @@ export const RedrawButtons = (): JSX.Element => {
 
       <button
         onclick={() => {
-          m.redraw();
+          m.redraw('manualRedraw');
         }}
       >
         Manual Redraw
