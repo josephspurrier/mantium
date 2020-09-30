@@ -15,7 +15,6 @@ export const route = (
 
   // Register the router event listeners.
   if (!state.routerActive) {
-    console.log('Router active.');
     state.routerActive = true;
     // For initial page load or when routes are changed in the browser
     // URL textbox.
@@ -35,12 +34,17 @@ const resolveRoute = (route: string) => {
   }
 };
 
-// Router will render the page based on the route to the DOM.
-const router = (): void => {
+export const currentURL = (): string => {
   let url = window.location.hash.slice(1) || '/';
   if (state.routerPrefix === '') {
     url = window.location.pathname;
   }
+  return url;
+};
+
+// Router will render the page based on the route to the DOM.
+const router = (): void => {
+  const url = currentURL();
   const routeResolved = resolveRoute(url);
   if (routeResolved) {
     render(state.rootParent, routeResolved);
@@ -51,7 +55,6 @@ const router = (): void => {
       return;
     }
 
-    console.log('Route not found');
     render(state.rootParent, '404 Page not found');
   }
 };

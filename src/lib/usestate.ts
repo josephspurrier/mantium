@@ -1,8 +1,9 @@
+import { currentURL } from './router';
 import { state } from './state';
 import { redraw } from './vdom';
 
 export const resetStateCounter = (): void => {
-  state.globalStateCounter = -1;
+  state.globalStateCounter[currentURL()] = -1;
 };
 
 // Use in closures to get and set the values. The first value it returns
@@ -17,24 +18,28 @@ export const resetStateCounter = (): void => {
 export const useState = function <T>(
   v: T,
 ): [T, (val: T | ((prevVal: T) => T)) => void] {
-  state.globalStateCounter++;
-  const localCounter = state.globalStateCounter;
+  if (state.globalState[currentURL()] === undefined) {
+    state.globalStateCounter[currentURL()] = -1;
+    state.globalState[currentURL()] = [];
+  }
+  state.globalStateCounter[currentURL()]++;
+  const localCounter = state.globalStateCounter[currentURL()];
   // If this is the first call from a function, store the initial value.
-  if (localCounter >= state.globalState.length) {
-    state.globalState[localCounter] = v;
+  if (localCounter >= state.globalState[currentURL()].length) {
+    state.globalState[currentURL()][localCounter] = v;
   }
 
   return [
     // Return the value.
-    state.globalState[localCounter] as T,
+    state.globalState[currentURL()][localCounter] as T,
     // Return the setter.
     (val: T | ((prevVal: T) => T)): void => {
       if (typeof val === 'function') {
-        state.globalState[localCounter] = (val as (prevVal: T) => T)(
-          state.globalState[localCounter] as T,
-        );
+        state.globalState[currentURL()][localCounter] = (val as (
+          prevVal: T,
+        ) => T)(state.globalState[currentURL()][localCounter] as T);
       } else {
-        state.globalState[localCounter] = val;
+        state.globalState[currentURL()][localCounter] = val;
       }
 
       redraw();

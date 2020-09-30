@@ -1,5 +1,13 @@
 import { RouteList } from './router';
 
+export interface useStateData {
+  [property: string]: unknown[];
+}
+
+export interface useStateCounter {
+  [property: string]: number;
+}
+
 export interface LibraryState {
   // Root element where Vnodes are rendered.
   rootParent: HTMLElement;
@@ -8,9 +16,9 @@ export interface LibraryState {
   // Generate the new state.
   generateRawState: () => JSX.Element;
   // Storage for local variables.
-  globalState: unknown[];
+  globalState: useStateData;
   // Counter for local variables.
-  globalStateCounter: number;
+  globalStateCounter: useStateCounter;
   // Router state.
   routerActive: boolean;
   // Router prefix.
@@ -28,8 +36,8 @@ const newState = (): LibraryState => {
     rootParent: {} as HTMLElement,
     currentState: {} as JSX.Vnode,
     generateRawState: {} as () => JSX.Element,
-    globalState: [] as unknown[],
-    globalStateCounter: -1,
+    globalState: {} as useStateData,
+    globalStateCounter: {} as useStateCounter,
     routerActive: false,
     routerPrefix: '#',
     routes: {} as RouteList,
