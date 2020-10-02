@@ -34,7 +34,7 @@ export const useEffect = (
   }
 };
 
-const runLogic = (url: string, i: number, onlyClean: boolean) => {
+const runFunctions = (url: string, i: number, onlyClean: boolean) => {
   // Do a cleanup if one is set.
   const willDestroy = state.globalEffect[url][i].onDestroy;
   if (willDestroy !== undefined) {
@@ -60,26 +60,26 @@ const clean = (url: string, onlyClean: boolean) => {
       if (fun) {
         //console.log('when:', fun.whenBefore, fun.whenAfter);
         if (onlyClean) {
-          runLogic(url, i, onlyClean);
+          runFunctions(url, i, onlyClean);
         } else if (fun.whenAfter === undefined) {
           // Run every time.
-          runLogic(url, i, false);
+          runFunctions(url, i, false);
         } else if (Array.isArray(fun.whenAfter) && fun.whenAfter.length === 0) {
           // Run once.
           if (
             fun.whenBefore === undefined ||
             !shallowEqual(fun.whenBefore, fun.whenAfter)
           ) {
-            runLogic(url, i, false);
+            runFunctions(url, i, false);
             fun.whenBefore = fun.whenAfter;
           }
         } else if (fun.whenBefore === undefined) {
           // Run on first run.
-          runLogic(url, i, false);
+          runFunctions(url, i, false);
           fun.whenBefore = fun.whenAfter;
         } else {
           if (!shallowEqual(fun.whenBefore, fun.whenAfter)) {
-            runLogic(url, i, false);
+            runFunctions(url, i, false);
             fun.whenBefore = fun.whenAfter;
           }
         }

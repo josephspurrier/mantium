@@ -271,7 +271,7 @@ export const RedrawButtons = (): JSX.Element => {
 m.render(document.body, RedrawButtons);
 ```
 
-### Requests
+### Requests and useEffect
 
 
 ```jsx
@@ -308,22 +308,11 @@ interface UserResponse {
   };
 }
 
-let alreadyRan = false;
-
-const useEffect = (f: () => void, when: string[] = []) => {
-  if (when.length === 0) {
-    if (!alreadyRan) {
-      alreadyRan = true;
-      f();
-    }
-  }
-};
-
 export const JSONRequest = (): JSX.Element => {
   const [getPost, setPost] = m.useState({} as PostResponse);
   const [getUser, setUser] = m.useState({} as UserResponse);
 
-  useEffect(() => {
+  m.useEffect(() => {
     m.request<PostResponse>({
       url: 'https://jsonplaceholder.typicode.com/posts/5',
     })
@@ -340,7 +329,7 @@ export const JSONRequest = (): JSX.Element => {
       .catch((error: Response) => {
         console.warn(error);
       });
-  });
+  }, []);
 
   return (
     <>
@@ -399,6 +388,8 @@ export const Meiosis = (): JSX.Element => {
       <button
         onclick={() => {
           actions.inc();
+          // Requires redraw if not interacting with useState setter directly.
+          m.redraw();
         }}
       >
         Add
@@ -406,6 +397,8 @@ export const Meiosis = (): JSX.Element => {
       <button
         onclick={() => {
           actions.dec();
+          // Requires redraw if not interacting with useState setter directly.
+          m.redraw();
         }}
       >
         Subtract

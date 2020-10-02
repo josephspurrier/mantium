@@ -6,6 +6,7 @@ import { redraw } from './vdom';
 import { route } from './router';
 import { request } from './request';
 import { resetState, state } from './state';
+import { useEffect } from './useeffect';
 
 export const m = {
   state: state,
@@ -16,6 +17,7 @@ export const m = {
   redraw: redraw,
   useState: useState,
   batchState: batchState,
+  useEffect: useEffect,
   route: route,
   request: request,
 };
