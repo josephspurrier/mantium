@@ -11,6 +11,11 @@ export function Top(): JSX.Element {
     return () => console.log('top done');
   });
 
+  useEffect(() => {
+    console.log('Top2 rendered');
+    return () => console.log('top2 done');
+  });
+
   return (
     <>
       <a title='home' href='#/'>
