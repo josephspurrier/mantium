@@ -3,6 +3,7 @@ import { cleanState } from './fragment';
 import { resetStateCounter } from './usestate';
 import { updateAttrs } from './attrs';
 import { state } from './state';
+import { processEffects } from './useeffect';
 
 // Redraw, but watch out for loops.
 export const redraw = (origin = ''): void => {
@@ -60,6 +61,9 @@ export const redraw = (origin = ''): void => {
     state.redrawAgain = false;
     redraw('redrawAgain');
   }
+
+  // Run the effects.
+  processEffects();
 };
 
 // Accepts either a Vnode or a string and makes the changes on the DOM.
@@ -118,18 +122,38 @@ const changed = function (
   node2: JSX.Vnode | string,
 ) {
   if (typeof node1 !== typeof node2) {
-    return true;
-  } else if (
-    (node1 as JSX.Vnode) &&
-    (node1 as JSX.Vnode).attrs &&
-    (node1 as JSX.Vnode).attrs.forceUpdate
-  ) {
+    // If the nodes types are different, then they changed.
     return true;
   } else if (typeof node1 !== 'string' && typeof node2 !== 'string') {
-    if (node1.tag !== node2.tag) {
+    // If the nodes are vnodes
+    if (node1.attrs && node1.attrs.forceUpdate) {
+      return true;
+    } else if (node1.tag !== node2.tag) {
+      return true;
+    } else if (!shallowEqual(node1.attrs, node2.attrs)) {
       return true;
     }
   }
 
   return false;
+};
+
+const shallowEqual = (
+  object1: JSX.ElementAttrs,
+  object2: JSX.ElementAttrs,
+): boolean => {
+  const keys1 = Object.keys(object1);
+  const keys2 = Object.keys(object2);
+
+  if (keys1.length !== keys2.length) {
+    return false;
+  }
+
+  for (const key of keys1) {
+    if (String(object1[key]) !== String(object2[key])) {
+      return false;
+    }
+  }
+
+  return true;
 };

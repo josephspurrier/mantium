@@ -2,9 +2,10 @@
 import { m } from '../lib';
 
 export const Page2 = (): JSX.Element => {
-  const [, setPost] = m.useState('test');
-  setPost('another');
-  m.redraw('page2');
+  // Examples of what not to do:
+  // const [, setPost] = m.useState('test');
+  // setPost('another');
+  // m.redraw('page2');
   return (
     <>
       <a title='home' href='#/'>

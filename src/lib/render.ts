@@ -1,6 +1,7 @@
 import { redraw } from './vdom';
 import { state } from './state';
 import { createVnode } from './vnode';
+import { currentURL } from './router';
 
 // Set the function to call to generate the Vnode and then trigger a redraw.
 export const render = (
@@ -22,6 +23,8 @@ export const render = (
   state.redrawCounter = 0;
   state.isRendering = true;
   redraw('render');
+  // Store the last URL.
+  state.lastPage = currentURL();
   state.isRendering = false;
   state.redrawCounter = 0;
 };

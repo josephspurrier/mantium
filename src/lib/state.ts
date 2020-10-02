@@ -8,6 +8,14 @@ export interface useStateCounter {
   [property: string]: number;
 }
 
+export interface useEffectData {
+  [property: string]: ((() => () => void) | (() => void))[];
+}
+
+export interface useEffectCounter {
+  [property: string]: number;
+}
+
 export interface LibraryState {
   // Root element where Vnodes are rendered.
   rootParent: HTMLElement;
@@ -15,16 +23,24 @@ export interface LibraryState {
   currentState: JSX.Vnode;
   // Generate the new state.
   generateRawState: () => JSX.Element;
-  // Storage for local variables.
+  // Storage for useEffect.
   globalState: useStateData;
-  // Counter for local variables.
+  // Counter for useState.
   globalStateCounter: useStateCounter;
+  // Storage for useEffect.
+  globalEffect: useEffectData;
+  // Storage for useEffect.
+  globalEffectCleanup: useEffectData;
+  // Counter for useEffect.
+  globalEffectCounter: useEffectCounter;
   // Router state.
   routerActive: boolean;
   // Router prefix.
   routerPrefix: string;
   // List of routes.
   routes: RouteList;
+  // Last page.
+  lastPage: string;
   // Determine if currently redrawing;
   isRedrawing: boolean;
   // If redrawing, then redraw again after.
@@ -42,9 +58,13 @@ const newState = (): LibraryState => {
     generateRawState: {} as () => JSX.Element,
     globalState: {} as useStateData,
     globalStateCounter: {} as useStateCounter,
+    globalEffect: {} as useEffectData,
+    globalEffectCleanup: {} as useEffectData,
+    globalEffectCounter: {} as useEffectCounter,
     routerActive: false,
     routerPrefix: '#',
     routes: {} as RouteList,
+    lastPage: '',
     isRedrawing: false,
     redrawAgain: false,
     redrawCounter: 0,

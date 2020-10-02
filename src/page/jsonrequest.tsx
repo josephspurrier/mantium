@@ -1,5 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { m } from '../lib';
+import { useEffect } from '../lib/useeffect';
 
 interface PostResponse {
   userId: number;
@@ -32,39 +33,29 @@ interface UserResponse {
   };
 }
 
-// let alreadyRan = false;
-
-// const useEffect = (f: () => void, when: string[] = []) => {
-//   if (when.length === 0) {
-//     if (!alreadyRan) {
-//       alreadyRan = true;
-//       f();
-//     }
-//   }
-// };
-
 export const JSONRequest = (): JSX.Element => {
   const [getPost, setPost] = m.useState({} as PostResponse);
   const [getUser, setUser] = m.useState({} as UserResponse);
 
-  //useEffect(() => {
-  m.request<PostResponse>({
-    url: 'https://jsonplaceholder.typicode.com/posts/5',
-  })
-    .then((data: PostResponse) => {
-      setPost(data);
+  // FIXME: This needs to run just once.
+  useEffect(() => {
+    m.request<PostResponse>({
+      url: 'https://jsonplaceholder.typicode.com/posts/5',
+    })
+      .then((data: PostResponse) => {
+        setPost(data);
 
-      return m.request<UserResponse>({
-        url: `https://jsonplaceholder.typicode.com/users/${data.userId}`,
+        return m.request<UserResponse>({
+          url: `https://jsonplaceholder.typicode.com/users/${data.userId}`,
+        });
+      })
+      .then((udata: UserResponse) => {
+        setUser(udata);
+      })
+      .catch((error: Response) => {
+        console.warn(error);
       });
-    })
-    .then((udata: UserResponse) => {
-      setUser(udata);
-    })
-    .catch((error: Response) => {
-      console.warn(error);
-    });
-  //});
+  }, []);
 
   return (
     <>
