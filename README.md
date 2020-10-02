@@ -39,7 +39,7 @@ This library supports these features:
 - [x] Render function for JSX
 - [x] HyperScript support
 - [x] JSX using TypeScript (.tsx)
-- [ ] JSX using Babel (.jsx)
+- [x] JSX using Babel (.jsx)
 - [x] JSX fragments
 - [x] JSX declarations/interfaces for: IntrinsicElements, Element, ElementChildrenAttribute
 - [x] JSX children access via attributes (typing available using interfaces)
@@ -79,7 +79,6 @@ This library supports these features:
 - [x] Add Jest
 - [x] Generate test coverage
 - [x] Unit tests
-- [ ] Fix bug when going to JSON request page and then back to the UI Testing Page
 - [ ] Clean up the types
 - [x] Launch on NPM to see how the process works
 - [x] Publish on NPM in standalone JavaScript file format (Rollup)

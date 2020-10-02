@@ -4,7 +4,8 @@
     "env": {
         "browser": true,
         "node": true,
-        "es6": true
+        "es6": true,
+        "jest": true
     },
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
@@ -47,7 +48,8 @@
         // https://github.com/typescript-eslint/typescript-eslint/issues/111#issuecomment-510030930
         {
             "files": [
-                "**/*.tsx"
+                "**/*.tsx",
+                "**/*.jsx"
             ],
             "rules": {
                 "local/jsx-uses-my-pragma": "error",
