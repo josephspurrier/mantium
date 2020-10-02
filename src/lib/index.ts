@@ -1,5 +1,5 @@
 import { render } from './render';
-import { useState } from './usestate';
+import { batchState, useState } from './usestate';
 import { createVnode } from './vnode';
 import { createFragment } from './fragment';
 import { redraw } from './vdom';
@@ -15,6 +15,7 @@ export const m = {
   render: render,
   redraw: redraw,
   useState: useState,
+  batchState: batchState,
   route: route,
   request: request,
 };

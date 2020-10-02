@@ -1,10 +1,11 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { m } from '../lib';
 import { useEffect } from '../lib/useeffect';
-import { useState } from '../lib/usestate';
+import { batchState, useState } from '../lib/usestate';
 
 export function Top(): JSX.Element {
   const [count, setCount] = useState(0);
+  const [, setCount2] = useState(0);
 
   // Run only once.
   useEffect(() => {
@@ -26,7 +27,10 @@ export function Top(): JSX.Element {
       <div>All of the divs below are clicked to demonstration useEffect.</div>
       <div
         onClick={() => {
-          setCount((prev) => prev + 1);
+          batchState(() => {
+            setCount((prev) => prev + 1);
+            setCount2((prev) => prev + 1);
+          });
         }}
       >
         Top Level ({count}) will only render once and will cleanup when leaving

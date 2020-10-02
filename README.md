@@ -72,6 +72,7 @@ This library supports these features:
 - [x] On useEffect, allow specifying when to update (onLoad, on variable change, etc)
 - [x] Add redraw after request (doesn't alway work, especially with nested requested, but if useing useState then it will)
 - [x] Add redraw on setter from useState
+- [x] Ability to batch setState commands to prevent rendering after each update
 - [x] Allow useState to pass in function to get previous value
 - [x] Easy way to view output of generated code (`npm run build-clean`)
 - [ ] Performance testing

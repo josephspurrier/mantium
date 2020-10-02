@@ -6,6 +6,22 @@ export const resetStateCounter = (): void => {
   state.globalStateCounter[currentURL()] = -1;
 };
 
+// Allow multiple calls to setState setters and don't redraw until they are
+// all finished.
+export const batchState = (f: () => void): void => {
+  state.isBatchingState = true;
+  f();
+
+  if (state.redrawAfterBatch) {
+    state.isBatchingState = false;
+    redraw('batchState');
+    state.redrawAfterBatch = false;
+  }
+
+  // Ensure batching state is false.
+  state.isBatchingState = false;
+};
+
 // Use in closures to get and set the values. The first value it returns
 // is the getter and the second function is the setter. Like React, it is
 // ordered and it's a generic so the default value can be set as a parameters.

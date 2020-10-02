@@ -8,6 +8,12 @@ import { shallowEqual } from './helper';
 
 // Redraw, but watch out for loops.
 export const redraw = (origin = ''): void => {
+  // If in batch state, then don't redraw right now.
+  if (state.isBatchingState) {
+    state.redrawAfterBatch = true;
+    return;
+  }
+
   // Don't allow a redraw if the page is still rendering.
   if (state.isRendering && origin !== 'render') {
     console.warn(

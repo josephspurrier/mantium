@@ -37,7 +37,6 @@ export const JSONRequest = (): JSX.Element => {
   const [getPost, setPost] = m.useState({} as PostResponse);
   const [getUser, setUser] = m.useState({} as UserResponse);
 
-  // FIXME: This needs to run just once.
   useEffect(() => {
     m.request<PostResponse>({
       url: 'https://jsonplaceholder.typicode.com/posts/5',

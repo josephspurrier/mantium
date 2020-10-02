@@ -54,6 +54,10 @@ export interface LibraryState {
   redrawCounter: number;
   // Tracking when rendering.
   isRendering: boolean;
+  // Tracking when batching.
+  isBatchingState: boolean;
+  // Redraw after batch is finished.
+  redrawAfterBatch: boolean;
 }
 
 const newState = (): LibraryState => {
@@ -73,6 +77,8 @@ const newState = (): LibraryState => {
     redrawAgain: false,
     redrawCounter: 0,
     isRendering: false,
+    isBatchingState: false,
+    redrawAfterBatch: false,
   };
 };
 
