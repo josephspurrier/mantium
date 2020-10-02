@@ -11,8 +11,9 @@ export const redraw = (origin = ''): void => {
   if (state.isRendering && origin !== 'render') {
     console.warn(
       'Should not be redrawing before the page is done loading. ' +
-        'Ensure there is no render() call outside of a useEffect(). ' +
-        'Redrawing stopped.',
+        'Ensure there is no call that triggers a redraw like a call to a ' +
+        ' useState setter outside of a useEffect(). ' +
+        'Redraw skipped.',
     );
     return;
   }
@@ -20,7 +21,8 @@ export const redraw = (origin = ''): void => {
   // If currently redrawing, then warn about redrawing and return;
   if (state.isRedrawing) {
     console.warn(
-      'Should not be calling redraw() inside of an event that triggers a redraw().',
+      'Should not be calling redraw() inside of an event that triggers a ' +
+        'redraw(). Redraw skipped.',
     );
     return;
   }

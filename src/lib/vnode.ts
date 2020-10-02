@@ -1,5 +1,4 @@
 import { addEventListeners, setAttrs } from './attrs';
-import { redraw } from './vdom';
 
 // Create a Vnode for the current element and children. Any fragments will
 // have a tag of FRAGMENT created.
@@ -57,9 +56,7 @@ export const createDocFragment = (node: JSX.Vnode): DocumentFragment => {
   } else {
     const elem = document.createElement(node.tag);
     setAttrs(elem, node.attrs);
-    addEventListeners(elem, node.attrs, () => {
-      redraw('eventDispatch');
-    });
+    addEventListeners(elem, node.attrs);
     // TODO: Determine why one article suggested to use:
     // elem.appendChild.bind(elem)
     appendChildToNode(elem, node.children);

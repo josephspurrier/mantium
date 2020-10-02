@@ -41,21 +41,10 @@ const extractEventName = (name: string) => {
 export const addEventListeners = (
   elem: HTMLElement,
   attrs: JSX.ElementAttrs,
-  redrawer?: () => void,
 ): void => {
   Object.keys(attrs).forEach((name) => {
     if (isEventAttrs(name)) {
       elem.addEventListener(extractEventName(name), attrs[name]);
-      elem.addEventListener(extractEventName(name), () => {
-        // Force a redraw when buttons are clicked.
-        // TODO: Don't think we need a delay here (mayb a 0 second one).
-        // TODO: See if this is the best way to do redraws because it would
-        // be good to wait until the listener is finished. Maybe a race
-        // condition.
-        if (redrawer) {
-          redrawer();
-        }
-      });
     }
   });
 };

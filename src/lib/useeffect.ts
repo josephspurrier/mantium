@@ -1,40 +1,32 @@
 import { currentURL } from './router';
 import { state } from './state';
-//import { redraw } from './vdom';
 
 export const resetEffectCounter = (): void => {
   state.globalEffectCounter[currentURL()] = -1;
 };
 
-const alreadyRan = false;
-
 export const useEffect = (
   f: (() => () => void) | (() => void),
   when: string[] = [],
 ): void => {
+  const url = currentURL();
+
   // If the global effect is empty, they initialize it.
-  if (state.globalEffect[currentURL()] === undefined) {
-    state.globalEffectCounter[currentURL()] = -1;
-    state.globalEffect[currentURL()] = [];
-    state.globalEffectCleanup[currentURL()] = [];
+  if (state.globalEffect[url] === undefined) {
+    state.globalEffectCounter[url] = -1;
+    state.globalEffect[url] = [];
+    state.globalEffectCleanup[url] = [];
   }
-  state.globalEffectCounter[currentURL()]++;
-  const localCounter = state.globalEffectCounter[currentURL()];
+  state.globalEffectCounter[url]++;
+  const localCounter = state.globalEffectCounter[url];
 
   // If this is the first call from a function, store the initial value.
-  if (localCounter >= state.globalEffect[currentURL()].length) {
-    state.globalEffect[currentURL()][localCounter] = f;
-  }
-
-  //console.log('Length:', localCounter);
-
-  if (when.length === 0) {
-    if (!alreadyRan) {
-      //alreadyRan = true;
-      // const v = f();
-      // if (typeof v === 'function') {
-      //   v();
-      // }
+  if (localCounter >= state.globalEffect[url].length) {
+    state.globalEffect[url][localCounter] = f;
+  } else {
+    if (when.length === 0) {
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      state.globalEffect[url][localCounter] = () => {};
     }
   }
 };
@@ -55,12 +47,10 @@ const clean = (url: string, onlyClean: boolean) => {
           // Run the function itself.
           const cleanupFunc = fun() as () => () => void;
           if (typeof cleanupFunc === 'function') {
-            //console.log('stored cleanup!');
             state.globalEffectCleanup[url][i] = cleanupFunc;
           } else {
-            state.globalEffectCleanup[url][i] = () => {
-              console.log('cleanup nothing');
-            };
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            state.globalEffectCleanup[url][i] = () => {};
           }
         }
       }
@@ -68,6 +58,7 @@ const clean = (url: string, onlyClean: boolean) => {
   }
 };
 
+// FIXME: Don't do a cleanup on a rerender if the function itself is not set.
 export const processEffects = (): void => {
   resetEffectCounter();
 

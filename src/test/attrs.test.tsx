@@ -71,24 +71,3 @@ test('remove attribute boolean', () => {
   // handlers.
   expect(clicked).toBe(3);
 });
-
-test('event redrawer', () => {
-  const elem = document.createElement('button');
-  let clicked = false;
-  let redrew = false;
-  addEventListeners(
-    elem,
-    {
-      onclick: () => {
-        clicked = true;
-      },
-    },
-    () => {
-      redrew = true;
-    },
-  );
-  elem.click();
-  expect(elem.outerHTML).toBe(`<button></button>`);
-  expect(clicked).toBe(true);
-  expect(redrew).toBe(true);
-});

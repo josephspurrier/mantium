@@ -13,6 +13,8 @@ export const State = (): JSX.Element => {
       <button
         onclick={() => {
           globalCounter++;
+          // Requires redraw since not using useState().
+          m.redraw();
         }}
       >
         Increment Global Variable
@@ -46,7 +48,7 @@ export const State = (): JSX.Element => {
       <div>Local counter: {count}</div>
       <div>Local counter 2: {count2}</div>
       <div>
-        Never counter: {neverWork} (Closures with local variables without
+        Never counter: {neverWork} (Closures modifying local variables without
         'useState' won't work with DOM updates. See the Console for output).
       </div>
     </>

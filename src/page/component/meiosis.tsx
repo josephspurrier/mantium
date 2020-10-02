@@ -35,6 +35,8 @@ export const Meiosis = (): JSX.Element => {
       <button
         onclick={() => {
           actions.inc();
+          // Requires redraw if not interacting with useState setter directly.
+          m.redraw();
         }}
       >
         Add
@@ -42,6 +44,8 @@ export const Meiosis = (): JSX.Element => {
       <button
         onclick={() => {
           actions.dec();
+          // Requires redraw if not interacting with useState setter directly.
+          m.redraw();
         }}
       >
         Subtract
