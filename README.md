@@ -69,7 +69,7 @@ This library supports these features:
 - [ ] Request handling for non-JSON
 - [ ] Handle redraws on requests to ensure loop don't occur
 - [x] Add useEffect which triggers after a redraw to support lifecycle methods of creation and destruction
-- [ ] On useEffect, allow specifying when to update (onLoad, on variable change, etc)
+- [x] On useEffect, allow specifying when to update (onLoad, on variable change, etc)
 - [x] Add redraw after request (doesn't alway work, especially with nested requested, but if useing useState then it will)
 - [x] Add redraw on setter from useState
 - [x] Allow useState to pass in function to get previous value

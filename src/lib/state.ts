@@ -8,8 +8,15 @@ export interface useStateCounter {
   [property: string]: number;
 }
 
+export interface UseEffectElement {
+  onCreate: (() => () => void) | (() => void);
+  onDestroy: () => void;
+  whenBefore: unknown[] | undefined;
+  whenAfter: unknown[] | undefined;
+}
+
 export interface useEffectData {
-  [property: string]: ((() => () => void) | (() => void))[];
+  [property: string]: UseEffectElement[];
 }
 
 export interface useEffectCounter {
@@ -29,8 +36,6 @@ export interface LibraryState {
   globalStateCounter: useStateCounter;
   // Storage for useEffect.
   globalEffect: useEffectData;
-  // Storage for useEffect.
-  globalEffectCleanup: useEffectData;
   // Counter for useEffect.
   globalEffectCounter: useEffectCounter;
   // Router state.
@@ -59,7 +64,6 @@ const newState = (): LibraryState => {
     globalState: {} as useStateData,
     globalStateCounter: {} as useStateCounter,
     globalEffect: {} as useEffectData,
-    globalEffectCleanup: {} as useEffectData,
     globalEffectCounter: {} as useEffectCounter,
     routerActive: false,
     routerPrefix: '#',
