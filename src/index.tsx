@@ -8,6 +8,7 @@ import { Page2 } from './page/page2';
 import { UITestPage } from './page/uitest';
 import { Top } from './page/effect';
 import { ContextRoot } from './page/context';
+import { ContextRoot2 } from './page/context2';
 
 const root = document.createElement('div');
 root.setAttribute('id', 'root');
@@ -19,6 +20,7 @@ m.route(root, '/app', UITestPage);
 m.route(root, '/page2', Page2);
 m.route(root, '/effect', Top);
 m.route(root, '/context', ContextRoot);
+m.route(root, '/context2', ContextRoot2);
 m.route(root, '/hyperscript', HyperScript);
 m.route(root, '/jsonrequest', JSONRequest);
 m.route(root, '/404', ErrorPage);

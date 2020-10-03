@@ -1,24 +1,31 @@
-import { createVnode } from './vnode';
+import { redraw } from './vdom';
+//import { createVnode } from './vnode';
 
-interface Context<T> {
-  Provider: (attrs: ContextProvider<T>) => JSX.Element;
+export interface Context<T> {
+  //Provider: (attrs: ContextProvider<T>) => JSX.Element;
   value: T;
 }
 
-interface ContextProvider<T> {
-  children: JSX.Element;
-  value: T;
-}
+// interface ContextProvider<T> {
+//   children: JSX.Element | JSX.Element[];
+//   value: T;
+// }
 
 export const createContext = function <T>(value: T): Context<T> {
   return {
-    Provider: (attrs: ContextProvider<T>): JSX.Element => {
-      return createVnode('PROVIDER', { value: value }, attrs.children);
-    },
+    // Provider: (attrs: ContextProvider<T>): JSX.Element => {
+    //   return createVnode('FRAGMENT', { value: value }, attrs.children);
+    // },
     value: value,
   };
 };
 
-export const useContext = function <T>(v: Context<T>): T {
-  return v.value;
+export const useContext = function <T>(v: Context<T>): [T, (value: T) => void] {
+  return [
+    v.value,
+    (value: T) => {
+      v.value = value;
+      redraw('useContext');
+    },
+  ];
 };
