@@ -20,6 +20,11 @@ export const MainPage = (): JSX.Element => {
         </a>
       </div>
       <div>
+        <a title='context' href='#/context'>
+          Go to Context Page
+        </a>
+      </div>
+      <div>
         <a title='hyperscript' href='#/hyperscript'>
           Go to HyperScript Page
         </a>

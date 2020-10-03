@@ -33,7 +33,7 @@ const removeFragments = (vn: JSX.Vnode): JSX.Vnode => {
     vn.children.forEach((element: JSX.Vnode | string) => {
       const vc = element as JSX.Vnode;
       if (vc.tag) {
-        if (vc.tag === 'FRAGMENT') {
+        if (vc.tag === 'FRAGMENT' || vc.tag === 'PROVIDER') {
           rChildren.push(...cleanChildren(vc));
         } else {
           rChildren.push(removeFragments(vc));
