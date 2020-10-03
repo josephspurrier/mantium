@@ -26,6 +26,21 @@ const SingleChildText = (attrs: SingleChildStringAttrs): JSX.Element => {
   return <div>Child should be Saturn: {attrs.children}</div>;
 };
 
+interface MultipleChildElementAttrs {
+  children: JSX.Element | JSX.Element[];
+}
+
+const MultipleChildElement = (
+  attrs: MultipleChildElementAttrs,
+): JSX.Element => {
+  return (
+    <div>
+      <div>Should have two children:</div>
+      <ul>{attrs.children}</ul>
+    </div>
+  );
+};
+
 interface NestedChildElementAttrs {
   children: JSX.Element;
 }
@@ -110,6 +125,11 @@ export const UITestPage = (): JSX.Element => {
           <span>Mars</span>
         </div>
       </NestedChildElement>
+
+      <MultipleChildElement>
+        <li>Child 1</li>
+        <li>Child 2</li>
+      </MultipleChildElement>
 
       <TwoFragments username='josephspurrier' />
 
