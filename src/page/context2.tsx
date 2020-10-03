@@ -10,7 +10,6 @@ export const ContextChild1 = (): JSX.Element => {
       <div>Child 1 value: {value}</div>
       <button
         onclick={() => {
-          console.log('clicked 1');
           setValue('duck');
         }}
       >
@@ -27,7 +26,6 @@ export const ContextChild2 = (): JSX.Element => {
       <div>Child 2 value: {value}</div>
       <button
         onclick={() => {
-          console.log('clicked 2');
           setValue('fish');
         }}
       >
