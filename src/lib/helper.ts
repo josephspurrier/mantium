@@ -1,3 +1,17 @@
+import { state } from './state';
+
+export const resetStateCounter = (): void => {
+  state.globalStateCounter[currentURL()] = -1;
+};
+
+export const currentURL = (): string => {
+  let url = window.location.hash.slice(1) || '/';
+  if (state.routerPrefix === '') {
+    url = window.location.pathname;
+  }
+  return url;
+};
+
 export const shallowEqual = (
   object1: JSX.ElementAttrs,
   object2: JSX.ElementAttrs,

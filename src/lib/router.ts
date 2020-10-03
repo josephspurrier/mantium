@@ -1,3 +1,4 @@
+import { currentURL } from './helper';
 import { render } from './render';
 import { state } from './state';
 
@@ -32,14 +33,6 @@ const resolveRoute = (route: string) => {
   } catch (error) {
     throw new Error('The route is not defined');
   }
-};
-
-export const currentURL = (): string => {
-  let url = window.location.hash.slice(1) || '/';
-  if (state.routerPrefix === '') {
-    url = window.location.pathname;
-  }
-  return url;
 };
 
 // Router will render the page based on the route to the DOM.

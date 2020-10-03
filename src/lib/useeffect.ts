@@ -1,5 +1,5 @@
 import { shallowEqual } from './helper';
-import { currentURL } from './router';
+import { currentURL } from './helper';
 import { state } from './state';
 
 export const resetEffectCounter = (): void => {

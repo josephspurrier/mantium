@@ -1,6 +1,6 @@
 import { createElementText, createDocFragment } from './vnode';
 import { cleanState } from './fragment';
-import { resetStateCounter } from './usestate';
+import { resetStateCounter } from './helper';
 import { updateAttrs } from './attrs';
 import { state } from './state';
 import { processEffects } from './useeffect';
@@ -34,8 +34,9 @@ export const redraw = (origin = ''): void => {
     return;
   }
 
-  // Prevent loops except when an event is clicked.
-  if (origin !== 'eventDispatch' && origin !== 'useState') {
+  // Count loop when not called by useState.
+  // FIXME: This may not be needed anymore since the redrawing change a bit.
+  if (origin !== 'useState') {
     state.redrawCounter++;
   }
 

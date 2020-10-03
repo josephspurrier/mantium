@@ -1,10 +1,6 @@
-import { currentURL } from './router';
+import { currentURL } from './helper';
 import { state } from './state';
 import { redraw } from './vdom';
-
-export const resetStateCounter = (): void => {
-  state.globalStateCounter[currentURL()] = -1;
-};
 
 // Allow multiple calls to setState setters and don't redraw until they are
 // all finished.

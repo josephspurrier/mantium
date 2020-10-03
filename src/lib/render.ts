@@ -1,7 +1,7 @@
 import { redraw } from './vdom';
 import { state } from './state';
 import { createVnode } from './vnode';
-import { currentURL } from './router';
+import { currentURL } from './helper';
 
 // Set the function to call to generate the Vnode and then trigger a redraw.
 export const render = (
