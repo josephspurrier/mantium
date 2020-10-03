@@ -68,6 +68,7 @@ This library supports these features:
 - [x] Request Handling for JSON
 - [ ] Request handling for non-JSON
 - [ ] Handle redraws on requests to ensure loop don't occur
+- [x] Remove all circular dependencies
 - [x] Add useEffect which triggers after a redraw to support lifecycle methods of creation and destruction
 - [x] On useEffect, allow specifying when to update (onLoad, on variable change, etc)
 - [x] Add redraw after request (doesn't alway work, especially with nested requested, but if useing useState then it will)
