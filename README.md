@@ -74,6 +74,7 @@ This library supports these features:
 - [x] Add redraw on setter from useState
 - [x] Ability to batch setState commands to prevent rendering after each update
 - [x] Allow useState to pass in function to get previous value
+- [x] Add simplified useContext without provider
 - [x] Easy way to view output of generated code (`npm run build-clean`)
 - [ ] Performance testing
 - [x] Add Jest
@@ -411,4 +412,30 @@ export const Meiosis = (): JSX.Element => {
 };
 
 m.render(document.body, Meiosis);
+```
+
+### useContext
+
+```typescript
+import { m } from 'mantium';
+
+const UserContext = m.createContext('monkey');
+
+const ContextChild = (): JSX.Element => {
+  const [value, setValue] = m.useContext(UserContext);
+  return (
+    <>
+      <div>Child value: {value}</div>
+      <button
+        onclick={() => {
+          setValue('duck');
+        }}
+      >
+        Change 2
+      </button>
+    </>
+  );
+};
+
+m.render(document.body, ContextChild);
 ```

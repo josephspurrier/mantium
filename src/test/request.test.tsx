@@ -29,7 +29,6 @@ test('request success', () => {
   return m
     .request<PostResponse>({
       url: 'https://jsonplaceholder.typicode.com/posts/5',
-      disableRedraw: true,
     })
     .then((data) => expect(data).toEqual(returnJSON));
 });
@@ -50,7 +49,6 @@ test('request fail', () => {
   return m
     .request<PostResponse>({
       url: 'https://jsonplaceholder.typicode.com/posts/5',
-      disableRedraw: true,
     })
     .catch((data) => expect(data).toEqual(returnJSON));
 });
