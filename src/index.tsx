@@ -4,7 +4,7 @@ import { Mantium } from './lib/v2/createElement';
 // import { ErrorPage } from './page/error';
 // import { HyperScript } from './page/hyperscript';
 // import { JSONRequest } from './page/jsonrequest';
-// import { MainPage } from './page/main';
+import { MainPage } from './page/main';
 // import { Page2 } from './page/page2';
 // import { UITestPage } from './page/uitest';
 // import { Top } from './page/effect';
@@ -37,12 +37,12 @@ document.body.appendChild(root);
 //   },
 // };
 
-const element = Mantium.createElement(
-  'div',
-  { id: 'foo' },
-  Mantium.createElement('a', {}, 'bar'),
-  Mantium.createElement('b'),
-);
+// const element = Mantium.createElement(
+//   'div',
+//   { id: 'foo' },
+//   Mantium.createElement('a', {}, 'bar'),
+//   Mantium.createElement('b'),
+// );
 
 /** @jsx Mantium.createElement */
 // const element = (
@@ -52,9 +52,24 @@ const element = Mantium.createElement(
 //   </div>
 // );
 
-console.log('Element:', element);
+/** @jsx Mantium.createElement */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function Counter() {
+  const [state, setState] = Mantium.useState(1);
+  return <h1 onClick={() => setState((prev) => prev + 1)}>Count: {state}</h1>;
+}
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function Hello() {
+  return <div>Hello</div>;
+}
+
+const element = <MainPage />;
+//element = <Hello />;
+
+//console.log('Element:', element);
 Mantium.render(element, root);
+console.log('Render should be done.');
 
 // const node = document.createElement(element.type);
 // node['title'] = element.props.title as string;
