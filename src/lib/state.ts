@@ -50,8 +50,6 @@ export interface LibraryState {
   isRedrawing: boolean;
   // If redrawing, then redraw again after.
   redrawAgain: boolean;
-  // Redraw counter to ensure loops don't occur.
-  redrawCounter: number;
   // Tracking when rendering.
   isRendering: boolean;
   // Tracking when batching.
@@ -75,7 +73,6 @@ const newState = (): LibraryState => {
     lastPage: '',
     isRedrawing: false,
     redrawAgain: false,
-    redrawCounter: 0,
     isRendering: false,
     isBatchingState: false,
     redrawAfterBatch: false,

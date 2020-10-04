@@ -6,15 +6,13 @@ perfMonitor.initProfiler("render")
 
 var data = []
 
-console.log('Mantium:', mantium);
-
 const m = mantium.m;
 
-m.render(root, function () {
-	return m.createElement('div', [
+m.render(document.getElementById("app"), function () {
+	return m.createElement('div', {}, [
 	  m.createElement('table', { className: 'table table-striped latest-data' }, [
 		m.createElement(
-		  'tbody',
+		  'tbody', {},
 		  data.map(function (db) {
 			return m.createElement('tr', { key: db.dbname }, [
 			  m.createElement('td', { className: 'dbname' }, db.dbname),
