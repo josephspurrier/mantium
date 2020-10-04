@@ -11,7 +11,7 @@ You can use either via a CDN or via a node module. Both JavaScript and TypeScrip
 ### CDN
 
 ```html
-<script src="https://unpkg.com/mantium/dist/index.js"></script>
+<script src="https://unpkg.com/mantium/dist/index.umd.min.js"></script>
 <script>
     const m = mantium.m;
     m.render(document.body, "hello world");
