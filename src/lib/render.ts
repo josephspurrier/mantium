@@ -24,11 +24,9 @@ export const render = (
       return createVnode('ROOTFRAGMENT', {}, String(child));
     };
   }
-  state.redrawCounter = 0;
   state.isRendering = true;
   redraw('render');
   // Store the last URL.
   state.lastPage = currentURL();
   state.isRendering = false;
-  state.redrawCounter = 0;
 };

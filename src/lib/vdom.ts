@@ -34,23 +34,6 @@ export const redraw = (origin = ''): void => {
     return;
   }
 
-  // Count loop when not called by useState.
-  // FIXME: This may not be needed anymore since the redrawing change a bit.
-  if (origin !== 'useState') {
-    state.redrawCounter++;
-  }
-
-  // If a loop exceeds 100, then it's probably an issue.
-  const redrawLimit = 100;
-  if (state.redrawCounter >= redrawLimit) {
-    if (state.redrawCounter === redrawLimit) {
-      console.warn(`Should not be redrawing more than ${redrawLimit} times.`);
-      // Ensure the message only shows up once.
-      state.redrawCounter++;
-    }
-    return;
-  }
-
   state.isRedrawing = true;
 
   resetStateCounter();

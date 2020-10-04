@@ -1,6 +1,6 @@
 {
   "name": "mantium",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "description": "A client-side JavaScript/TypeScript library for building single page applications.",
   "repository": {
     "type": "git",
@@ -8,11 +8,11 @@
   },
   "author": "Joseph Spurrier",
   "license": "MIT",
-  "main": "./dist/index.js",
+  "main": "./dist/index.umd.js",
   "module": "./dist/esm/index.js",
   "types": "./dist/esm/index.d.ts",
-  "browser": "./dist/index.min.js",
-  "unpkg": "./dist/index.min.js",
+  "browser": "./dist/index.umd.min.js",
+  "unpkg": "./dist/index.umd.min.js",
   "scripts": {
     "start": "webpack-dev-server --open",
     "watch": "webpack --mode development --debug --output-pathinfo --watch",
