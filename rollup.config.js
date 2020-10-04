@@ -3,7 +3,7 @@ import typescript from '@rollup/plugin-typescript';
 import { terser } from 'rollup-plugin-terser';
 
 export default {
-  input: 'src/lib/index.ts',
+  input: 'src/lib/v2/index.ts',
   output: [
     {
       file: 'dist/index.umd.js',

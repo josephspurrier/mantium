@@ -330,7 +330,7 @@ function workLoop(deadline: IdleDeadline) {
   if (!nextUnitOfWork && wipRoot) {
     // FIXME: Delete this, it's just to see how often it runs.
     if (wipRoot) {
-      console.log('wipRoot:', wipRoot);
+      //console.log('wipRoot:', wipRoot);
     }
     commitRoot();
   }
@@ -343,6 +343,7 @@ function performUnitOfWork(fiber: Fiber): Fiber | undefined {
   if (isFunctionComponent) {
     updateFunctionComponent(fiber);
   } else {
+    //console.log('beforeHost:', fiber);
     updateHostComponent(fiber);
   }
 

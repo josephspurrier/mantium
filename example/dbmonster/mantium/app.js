@@ -8,8 +8,7 @@ var data = []
 
 const m = mantium.m;
 
-m.render(document.getElementById("app"), function () {
-	return m.createElement('div', {}, [
+m.render(m.createElement('div', {}, [
 	  m.createElement('table', { className: 'table table-striped latest-data' }, [
 		m.createElement(
 		  'tbody', {},
@@ -44,8 +43,7 @@ m.render(document.getElementById("app"), function () {
 		  }),
 		),
 	  ]),
-	]);
-  });
+	]),document.getElementById("app"));
 
 function update() {
 	requestAnimationFrame(update)
