@@ -14,7 +14,7 @@ export const State = (): JSX.Element => {
         onclick={() => {
           globalCounter++;
           // Requires redraw since not using useState().
-          //m.redraw();
+          m.redraw();
         }}
       >
         Increment Global Variable

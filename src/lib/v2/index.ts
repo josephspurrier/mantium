@@ -4,6 +4,7 @@ export const m = {
   render,
   renderNow,
   useState,
+  redraw,
 };
 
 declare global {
@@ -39,6 +40,8 @@ interface Fiber {
   type?: string | ((props: Props) => MNode);
   dom?: HTMLElement | DocumentFragment | Text;
   props: Props;
+  // We also add the alternate property to every fiber. This property is a
+  // link to the old fiber, the fiber that we committed to the DOM in the previous commit phase.
   alternate?: Fiber;
   parent?: Fiber;
   sibling?: Fiber;
@@ -200,6 +203,9 @@ function updateDom(
     .forEach((name) => {
       const eventType = name.toLowerCase().substring(2);
       dom.addEventListener(eventType, nextProps[name] as () => void);
+      // dom.addEventListener(eventType, () => {
+      //   console.log('clicked!');
+      // });
     });
 }
 
@@ -317,17 +323,15 @@ function render(element: MNode, container: HTMLElement): void {
 function workLoop(deadline: IdleDeadline) {
   let shouldYield = false;
   while (nextUnitOfWork && !shouldYield) {
-    //console.log('found unit of work:', nextUnitOfWork);
     nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
     shouldYield = deadline.timeRemaining() < 1;
   }
 
-  // FIXME: Delete
-  if (wipRoot) {
-    console.log('wipRoot:', wipRoot);
-  }
-
   if (!nextUnitOfWork && wipRoot) {
+    // FIXME: Delete this, it's just to see how often it runs.
+    if (wipRoot) {
+      console.log('wipRoot:', wipRoot);
+    }
     commitRoot();
   }
 
@@ -385,11 +389,18 @@ function reconcileChildren(
   let firstSibling: Fiber | undefined;
   let prevSibling: Fiber | undefined;
 
-  while (index < elements.length || oldFiber != null) {
+  //console.log('Old fiber:', oldFiber);
+
+  while (index < elements.length || oldFiber !== undefined) {
     const element = elements[index];
     let newFiber: Fiber | undefined;
 
+    // if (index >= elements.length) {
+    //   return [newFiber, newFiber];
+    // }
+
     // Handle fragments.
+    //console.log('element:', curFiber, elements, elements.length, index);
     if (element.type === 'FRAGMENT') {
       if (element.props.children) {
         const [firstSib, lastSibling] = reconcileChildren(
@@ -400,10 +411,17 @@ function reconcileChildren(
           curFiber.child = firstSib;
         }
         prevSibling = lastSibling;
+
+        // TODO: Not sure if this needs to be here on an update?
+        // if (oldFiber) {
+        //   oldFiber = oldFiber.sibling;
+        // }
+        oldFiber = undefined;
       }
     } else {
       const sameType = oldFiber && element && element.type == oldFiber.type;
 
+      // If the fiber already exists, then just update it.
       if (oldFiber && sameType) {
         newFiber = {
           type: oldFiber.type,
@@ -414,6 +432,8 @@ function reconcileChildren(
           effectTag: 'UPDATE',
         };
       }
+
+      // If the fiber doesn't exist yet, set it to create.
       if (element && !sameType) {
         newFiber = {
           type: element.type,
@@ -424,6 +444,8 @@ function reconcileChildren(
           effectTag: 'PLACEMENT',
         };
       }
+
+      // If the fiber already exists and is a different type, delete it.
       if (oldFiber && !sameType) {
         oldFiber.effectTag = 'DELETION';
         deletions.push(oldFiber);
@@ -471,16 +493,7 @@ function useState<T>(initial: T): [T, (action: (prevVal: T) => T) => void] {
   // TODO: This only looks like it supports a function, but we'll work with it for now.
   const setState = function (action: (prev: T) => T): void {
     hook.queue.push(action);
-    // TODO: I added this on currentRoot.
-    if (currentRoot) {
-      wipRoot = {
-        dom: currentRoot.dom,
-        props: currentRoot.props,
-        alternate: currentRoot,
-      };
-    }
-    nextUnitOfWork = wipRoot;
-    deletions = [];
+    redraw('setState');
   };
 
   // TODO: I added this, may need to see if the index should be in or out.
@@ -494,4 +507,19 @@ function useState<T>(initial: T): [T, (action: (prevVal: T) => T) => void] {
     hookIndex++;
   }
   return [hook.state, setState];
+}
+
+function redraw(origin = ''): void {
+  console.log('redraw:', origin);
+
+  // TODO: I added this on currentRoot.
+  if (currentRoot) {
+    wipRoot = {
+      dom: currentRoot.dom,
+      props: currentRoot.props,
+      alternate: currentRoot,
+    };
+  }
+  nextUnitOfWork = wipRoot;
+  deletions = [];
 }
