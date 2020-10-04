@@ -4,9 +4,9 @@ import { m } from './lib/v2';
 // import { ErrorPage } from './page/error';
 // import { HyperScript } from './page/hyperscript';
 // import { JSONRequest } from './page/jsonrequest';
-import { MainPage } from './page/main';
+//import { MainPage } from './page/main';
 // import { Page2 } from './page/page2';
-// import { UITestPage } from './page/uitest';
+import { UITestPage } from './page/uitest';
 // import { Top } from './page/effect';
 // import { ContextRoot } from './page/context';
 // import { ContextRoot2 } from './page/context2';
@@ -64,10 +64,10 @@ function Hello() {
   return <div>Hello</div>;
 }
 
-const element = <MainPage />;
+const element = <UITestPage />;
 //element = <Hello />;
 
-console.log('Tree:', element);
+//console.log('Tree:', element);
 m.render(element, root);
 console.log('Render should be done.');
 

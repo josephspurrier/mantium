@@ -66,13 +66,36 @@ function createElement(
   props = {} as Props,
   ...children: (MNode | string)[]
 ): MNode {
+  const getChildren = (arr: (MNode | unknown)[]): MNode[] => {
+    let r: MNode[] = [];
+
+    arr.forEach((element: unknown) => {
+      if (Array.isArray(element)) {
+        r = [...r, ...getChildren(element)];
+      } else {
+        if (element && (element as MNode).type) {
+          r.push(element as MNode);
+        } else {
+          if (typeof element === 'object') {
+            console.warn(
+              'Found an invalid object to render. It should be either text or a MNode.',
+              element,
+            );
+          }
+
+          r.push(createTextElement(String(element)));
+        }
+      }
+    });
+
+    return r;
+  };
+
   return {
     type,
     props: {
       ...props,
-      children: children.map((child) =>
-        typeof child === 'object' ? child : createTextElement(child),
-      ),
+      children: getChildren(children),
     },
   };
 }
@@ -104,8 +127,8 @@ function createDom(fiber: Fiber): HTMLElement | DocumentFragment | Text {
       dom = document.createTextNode('');
       break;
     }
-    // case 'FRAGMENT': {
-    //   console.log('YOU SHOULD NEVER SEE THIS.');
+    // case undefined: {
+    //   console.log('YOU SHOULD NEVER SEE THIS.', fiber);
     //   //dom = document.createDocumentFragment();
     //   //dom = document.createElement(fiber.type as string);
     //   break;
@@ -154,6 +177,8 @@ function updateDom(
         //dom[name] = '';
         dom.setAttribute(name, '');
       });
+
+    //console.log('nextProps', nextProps);
 
     // Set new or changed properties
     Object.keys(nextProps)
@@ -254,7 +279,6 @@ function renderNow(element: MNode, container: HTMLElement): void {
     }
     container.appendChild(dom);
   } else if (element.type === 'FRAGMENT') {
-    console.log('found fragment');
     if (element.props.children) {
       element.props.children.forEach((child) => renderNow(child, container));
     }
@@ -262,7 +286,6 @@ function renderNow(element: MNode, container: HTMLElement): void {
     const mnode = element.type(element.props);
     renderNow(mnode, container);
   } else {
-    console.log('name:', element.type);
     const dom = document.createElement(element.type);
 
     const isProperty = (key: string) => key !== 'children';

@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { m } from '../../lib';
+import { m } from '../../lib/v2';
 
 let globalCounter = 0;
 
@@ -14,7 +14,7 @@ export const State = (): JSX.Element => {
         onclick={() => {
           globalCounter++;
           // Requires redraw since not using useState().
-          m.redraw();
+          //m.redraw();
         }}
       >
         Increment Global Variable

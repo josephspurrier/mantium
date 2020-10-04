@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { m } from '../../lib';
+import { m } from '../../lib/v2';
 
 export const BooleanFlip = (): JSX.Element => {
   const [isBool, setBool] = m.useState(false);

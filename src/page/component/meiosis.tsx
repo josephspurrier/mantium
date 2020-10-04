@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { m } from '../../lib';
+import { m } from '../../lib/v2';
 
 interface StateAttrs {
   count: number;
@@ -36,7 +36,7 @@ export const Meiosis = (): JSX.Element => {
         onclick={() => {
           actions.inc();
           // Requires redraw if not interacting with useState setter directly.
-          m.redraw();
+          //m.redraw();
         }}
       >
         Add
@@ -45,7 +45,7 @@ export const Meiosis = (): JSX.Element => {
         onclick={() => {
           actions.dec();
           // Requires redraw if not interacting with useState setter directly.
-          m.redraw();
+          //m.redraw();
         }}
       >
         Subtract

@@ -1,4 +1,4 @@
-import { m } from '../../lib';
+import { m } from '../../lib/v2';
 
 let globalCounter = 0;
 
@@ -18,7 +18,7 @@ export const RedrawButtons = (): JSX.Element => {
 
       <button
         onclick={() => {
-          m.redraw('manualRedraw');
+          //m.redraw('manualRedraw');
         }}
       >
         Manual Redraw
