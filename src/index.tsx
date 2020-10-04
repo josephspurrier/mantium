@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { m } from './lib';
-import { Mantium } from './lib/v2/createElement';
+//import { m } from './lib';
+import { m } from './lib/v2';
 // import { ErrorPage } from './page/error';
 // import { HyperScript } from './page/hyperscript';
 // import { JSONRequest } from './page/jsonrequest';
@@ -44,7 +44,7 @@ document.body.appendChild(root);
 //   Mantium.createElement('b'),
 // );
 
-/** @jsx Mantium.createElement */
+/** @jsx m.createElement */
 // const element = (
 //   <div id='foo'>
 //     <a>bar</a>
@@ -52,10 +52,10 @@ document.body.appendChild(root);
 //   </div>
 // );
 
-/** @jsx Mantium.createElement */
+/** @jsx m.createElement */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function Counter() {
-  const [state, setState] = Mantium.useState(1);
+  const [state, setState] = m.useState(1);
   return <h1 onClick={() => setState((prev) => prev + 1)}>Count: {state}</h1>;
 }
 
@@ -67,8 +67,8 @@ function Hello() {
 const element = <MainPage />;
 //element = <Hello />;
 
-//console.log('Element:', element);
-Mantium.render(element, root);
+console.log('Tree:', element);
+m.render(element, root);
 console.log('Render should be done.');
 
 // const node = document.createElement(element.type);

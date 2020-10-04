@@ -1,5 +1,6 @@
-export const Mantium = {
+export const m = {
   createElement,
+  createFragment,
   render,
   renderNow,
   useState,
@@ -30,13 +31,13 @@ interface Props {
 }
 
 interface MNode {
-  type: string;
+  type: string | ((props: Props) => MNode);
   props: Props;
 }
 
 interface Fiber {
-  type?: string | ((props: Props) => void);
-  dom?: HTMLElement | Text;
+  type?: string | ((props: Props) => MNode);
+  dom?: HTMLElement | DocumentFragment | Text;
   props: Props;
   alternate?: Fiber;
   parent?: Fiber;
@@ -76,6 +77,15 @@ function createElement(
   };
 }
 
+function createFragment(props: Props): MNode {
+  return {
+    type: 'FRAGMENT',
+    props: {
+      children: props.children,
+    },
+  };
+}
+
 function createTextElement(text: string): MNode {
   return {
     type: 'TEXT_ELEMENT',
@@ -86,12 +96,25 @@ function createTextElement(text: string): MNode {
   };
 }
 
-function createDom(fiber: Fiber): HTMLElement | Text {
+function createDom(fiber: Fiber): HTMLElement | DocumentFragment | Text {
   //TODO: I added this "as string".
-  const dom =
-    fiber.type == 'TEXT_ELEMENT'
-      ? document.createTextNode('')
-      : document.createElement(fiber.type as string);
+  let dom: HTMLElement | Text | DocumentFragment;
+  switch (fiber.type) {
+    case 'TEXT_ELEMENT': {
+      dom = document.createTextNode('');
+      break;
+    }
+    // case 'FRAGMENT': {
+    //   console.log('YOU SHOULD NEVER SEE THIS.');
+    //   //dom = document.createDocumentFragment();
+    //   //dom = document.createElement(fiber.type as string);
+    //   break;
+    // }
+    default: {
+      dom = document.createElement(fiber.type as string);
+      break;
+    }
+  }
 
   updateDom(dom, {}, fiber.props);
 
@@ -105,11 +128,11 @@ const isNew = (prev: Props, next: Props) => (key: string) =>
 const isGone = (prev: Props, next: Props) => (key: string) => !(key in next);
 
 function updateDom(
-  dom: HTMLElement | Text,
+  dom: HTMLElement | DocumentFragment | Text,
   prevProps: Props,
   nextProps: Props,
 ) {
-  //Remove old or changed event listeners
+  // Remove old or changed event listeners
   Object.keys(prevProps)
     .filter(isEvent)
     .filter((key) => !(key in nextProps) || isNew(prevProps, nextProps)(key))
@@ -140,7 +163,7 @@ function updateDom(
         //dom[name] = nextProps[name];
         dom.setAttribute(name, String(nextProps[name]));
       });
-  } else {
+  } else if (dom instanceof Text) {
     // Else just set the node value.
     dom.nodeValue = nextProps.nodeValue as string;
   }
@@ -209,7 +232,10 @@ function commitWork(fiber: Fiber | undefined) {
   commitWork(fiber.sibling);
 }
 
-function commitDeletion(fiber: Fiber, domParent: HTMLElement | Text) {
+function commitDeletion(
+  fiber: Fiber,
+  domParent: HTMLElement | DocumentFragment | Text,
+) {
   if (fiber.dom) {
     domParent.removeChild(fiber.dom);
   } else {
@@ -227,7 +253,16 @@ function renderNow(element: MNode, container: HTMLElement): void {
       dom.nodeValue = element.props.nodeValue as string;
     }
     container.appendChild(dom);
+  } else if (element.type === 'FRAGMENT') {
+    console.log('found fragment');
+    if (element.props.children) {
+      element.props.children.forEach((child) => renderNow(child, container));
+    }
+  } else if (element.type instanceof Function) {
+    const mnode = element.type(element.props);
+    renderNow(mnode, container);
   } else {
+    console.log('name:', element.type);
     const dom = document.createElement(element.type);
 
     const isProperty = (key: string) => key !== 'children';
@@ -238,7 +273,7 @@ function renderNow(element: MNode, container: HTMLElement): void {
       });
 
     if (element.props.children) {
-      element.props.children.forEach((child) => render(child, dom));
+      element.props.children.forEach((child) => renderNow(child, dom));
     }
     container.appendChild(dom);
   }
@@ -264,6 +299,11 @@ function workLoop(deadline: IdleDeadline) {
     shouldYield = deadline.timeRemaining() < 1;
   }
 
+  // FIXME: Delete
+  if (wipRoot) {
+    console.log('wipRoot:', wipRoot);
+  }
+
   if (!nextUnitOfWork && wipRoot) {
     commitRoot();
   }
@@ -278,10 +318,13 @@ function performUnitOfWork(fiber: Fiber): Fiber | undefined {
   } else {
     updateHostComponent(fiber);
   }
+
   if (fiber.child) {
     return fiber.child;
   }
+
   let nextFiber: Fiber | undefined = fiber;
+
   while (nextFiber) {
     if (nextFiber.sibling) {
       return nextFiber.sibling;
@@ -295,8 +338,95 @@ function updateFunctionComponent(fiber: Fiber) {
   wipFiber = fiber;
   hookIndex = 0;
   wipFiber.hooks = [];
-  const children = [fun(fiber.props)];
+  const children = [fun(fiber.props)] as MNode[];
   reconcileChildren(fiber, children);
+}
+
+function updateHostComponent(fiber: Fiber) {
+  if (!fiber.dom) {
+    fiber.dom = createDom(fiber);
+  }
+
+  // TODO: I added this because if children are null, then nothing will happen.
+  if (fiber.props.children) {
+    reconcileChildren(fiber, fiber.props.children);
+  }
+}
+
+function reconcileChildren(
+  curFiber: Fiber,
+  elements: MNode[],
+): [Fiber | undefined, Fiber | undefined] {
+  let index = 0;
+  let oldFiber = curFiber.alternate && curFiber.alternate.child;
+  let firstSibling: Fiber | undefined;
+  let prevSibling: Fiber | undefined;
+
+  while (index < elements.length || oldFiber != null) {
+    const element = elements[index];
+    let newFiber: Fiber | undefined;
+
+    // Handle fragments.
+    if (element.type === 'FRAGMENT') {
+      if (element.props.children) {
+        const [firstSib, lastSibling] = reconcileChildren(
+          curFiber,
+          element.props.children,
+        );
+        if (index === 0) {
+          curFiber.child = firstSib;
+        }
+        prevSibling = lastSibling;
+      }
+    } else {
+      const sameType = oldFiber && element && element.type == oldFiber.type;
+
+      if (oldFiber && sameType) {
+        newFiber = {
+          type: oldFiber.type,
+          props: element.props,
+          dom: oldFiber.dom,
+          parent: curFiber,
+          alternate: oldFiber,
+          effectTag: 'UPDATE',
+        };
+      }
+      if (element && !sameType) {
+        newFiber = {
+          type: element.type,
+          props: element.props,
+          dom: undefined,
+          parent: curFiber,
+          alternate: undefined,
+          effectTag: 'PLACEMENT',
+        };
+      }
+      if (oldFiber && !sameType) {
+        oldFiber.effectTag = 'DELETION';
+        deletions.push(oldFiber);
+      }
+
+      if (oldFiber) {
+        oldFiber = oldFiber.sibling;
+      }
+
+      if (index === 0) {
+        curFiber.child = newFiber;
+        firstSibling = newFiber;
+      } else if (element) {
+        // TODO: Added this check because the sibling could be null.
+        if (prevSibling) {
+          prevSibling.sibling = newFiber;
+        }
+      }
+
+      prevSibling = newFiber;
+    }
+    index++;
+  }
+
+  // Return the first and last sibling.
+  return [firstSibling, prevSibling];
 }
 
 function useState<T>(initial: T): [T, (action: (prevVal: T) => T) => void] {
@@ -341,69 +471,4 @@ function useState<T>(initial: T): [T, (action: (prevVal: T) => T) => void] {
     hookIndex++;
   }
   return [hook.state, setState];
-}
-
-function updateHostComponent(fiber: Fiber) {
-  if (!fiber.dom) {
-    fiber.dom = createDom(fiber);
-  }
-
-  // TODO: I added this because if children are null, then nothing will happen.
-  if (fiber.props.children) {
-    reconcileChildren(fiber, fiber.props.children);
-  }
-}
-
-function reconcileChildren(wipFiber: Fiber, elements: MNode[]) {
-  let index = 0;
-  let oldFiber = wipFiber.alternate && wipFiber.alternate.child;
-  let prevSibling: Fiber | undefined;
-
-  while (index < elements.length || oldFiber != null) {
-    const element = elements[index];
-    let newFiber: Fiber | undefined;
-
-    const sameType = oldFiber && element && element.type == oldFiber.type;
-
-    if (oldFiber && sameType) {
-      newFiber = {
-        type: oldFiber.type,
-        props: element.props,
-        dom: oldFiber.dom,
-        parent: wipFiber,
-        alternate: oldFiber,
-        effectTag: 'UPDATE',
-      };
-    }
-    if (element && !sameType) {
-      newFiber = {
-        type: element.type,
-        props: element.props,
-        dom: undefined,
-        parent: wipFiber,
-        alternate: undefined,
-        effectTag: 'PLACEMENT',
-      };
-    }
-    if (oldFiber && !sameType) {
-      oldFiber.effectTag = 'DELETION';
-      deletions.push(oldFiber);
-    }
-
-    if (oldFiber) {
-      oldFiber = oldFiber.sibling;
-    }
-
-    if (index === 0) {
-      wipFiber.child = newFiber;
-    } else if (element) {
-      // TODO: Added this check because the sibling could be null.
-      if (prevSibling) {
-        prevSibling.sibling = newFiber;
-      }
-    }
-
-    prevSibling = newFiber;
-    index++;
-  }
 }
