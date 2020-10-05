@@ -210,6 +210,7 @@ function updateDom(
 }
 
 function commitRoot() {
+  console.log('CommitRoot:', wipRoot);
   deletions.forEach(commitWork);
   // TODO: I added this because wipRoot could be null?
   if (wipRoot) {
@@ -341,6 +342,7 @@ function workLoop(deadline: IdleDeadline) {
 function performUnitOfWork(fiber: Fiber): Fiber | undefined {
   const isFunctionComponent = fiber.type instanceof Function;
   if (isFunctionComponent) {
+    console.log('funccomponent:', fiber);
     updateFunctionComponent(fiber);
   } else {
     //console.log('beforeHost:', fiber);
@@ -424,14 +426,27 @@ function reconcileChildren(
 
       // If the fiber already exists, then just update it.
       if (oldFiber && sameType) {
-        newFiber = {
-          type: oldFiber.type,
-          props: element.props,
-          dom: oldFiber.dom,
-          parent: curFiber,
-          alternate: oldFiber,
-          effectTag: 'UPDATE',
-        };
+        if (!shallowEqual(oldFiber.props, curFiber.props)) {
+          console.log('Not equal:', oldFiber.props, curFiber.props);
+          newFiber = {
+            type: oldFiber.type,
+            props: element.props,
+            dom: oldFiber.dom,
+            parent: curFiber,
+            alternate: oldFiber,
+            effectTag: 'UPDATE',
+          };
+        } else {
+          console.log('nochange!');
+          newFiber = {
+            type: oldFiber.type,
+            props: element.props,
+            dom: oldFiber.dom,
+            parent: curFiber,
+            alternate: oldFiber,
+            effectTag: 'NOCHANGE',
+          };
+        }
       }
 
       // If the fiber doesn't exist yet, set it to create.
@@ -474,6 +489,26 @@ function reconcileChildren(
   // Return the first and last sibling.
   return [firstSibling, prevSibling];
 }
+
+export const shallowEqual = (
+  object1: JSX.ElementAttrs,
+  object2: JSX.ElementAttrs,
+): boolean => {
+  const keys1 = Object.keys(object1);
+  const keys2 = Object.keys(object2);
+
+  if (keys1.length !== keys2.length) {
+    return false;
+  }
+
+  for (const key of keys1) {
+    if (String(object1[key]) !== String(object2[key])) {
+      return false;
+    }
+  }
+
+  return true;
+};
 
 function useState<T>(initial: T): [T, (action: (prevVal: T) => T) => void] {
   const oldHook =
@@ -521,6 +556,7 @@ function redraw(origin = ''): void {
       alternate: currentRoot,
     };
   }
+  console.log('Redraw WipRoot:', wipRoot);
   nextUnitOfWork = wipRoot;
   deletions = [];
 }
