@@ -1,30 +1,30 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 //import { m } from './lib';
 import { m } from './lib/v2';
-// import { ErrorPage } from './page/error';
-// import { HyperScript } from './page/hyperscript';
-// import { JSONRequest } from './page/jsonrequest';
-// import { MainPage } from './page/main';
-// import { Page2 } from './page/page2';
+import { ErrorPage } from './page/error';
+import { HyperScript } from './page/hyperscript';
+import { JSONRequest } from './page/jsonrequest';
+import { MainPage } from './page/main';
+import { Page2 } from './page/page2';
 import { UITestPage } from './page/uitest';
-// import { Top } from './page/effect';
-// import { ContextRoot } from './page/context';
-// import { ContextRoot2 } from './page/context2';
+import { Top } from './page/effect';
+//import { ContextRoot } from './page/context';
+//import { ContextRoot2 } from './page/context2';
 
 const root = document.createElement('div');
 root.setAttribute('id', 'root');
 document.body.appendChild(root);
 
-// m.state.routerPrefix = '#';
-// m.route(root, '/', MainPage);
-// m.route(root, '/app', UITestPage);
-// m.route(root, '/page2', Page2);
-// m.route(root, '/effect', Top);
-// m.route(root, '/context', ContextRoot);
-// m.route(root, '/context2', ContextRoot2);
-// m.route(root, '/hyperscript', HyperScript);
-// m.route(root, '/jsonrequest', JSONRequest);
-// m.route(root, '/404', ErrorPage);
+//m.state.routerPrefix = '#';
+m.route(root, '/', MainPage);
+m.route(root, '/app', UITestPage);
+m.route(root, '/page2', Page2);
+//m.route(root, '/effect', Top);
+//m.route(root, '/context', ContextRoot);
+//m.route(root, '/context2', ContextRoot2);
+m.route(root, '/hyperscript', HyperScript);
+//m.route(root, '/jsonrequest', JSONRequest);
+m.route(root, '/404', ErrorPage);
 
 // const element = <h1 title='foo'>Hello</h1>;
 // m.render(root, element);
@@ -54,22 +54,22 @@ document.body.appendChild(root);
 
 /** @jsx m.createElement */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function Counter() {
-  const [state, setState] = m.useState(1);
-  return <h1 onClick={() => setState((prev) => prev + 1)}>Count: {state}</h1>;
-}
+// function Counter() {
+//   const [state, setState] = m.useState(1);
+//   return <h1 onClick={() => setState((prev) => prev + 1)}>Count: {state}</h1>;
+// }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function Hello() {
-  return <div>Hello</div>;
-}
+// // eslint-disable-next-line @typescript-eslint/no-unused-vars
+// function Hello() {
+//   return <div>Hello</div>;
+// }
 
-const element = <UITestPage />;
-//element = <Hello />;
+// const element = <UITestPage />;
+// //element = <Hello />;
 
-//console.log('Tree:', element);
-m.render(element, root);
-console.log('Render should be done.');
+// //console.log('Tree:', element);
+// m.render(element, root);
+// console.log('Render should be done.');
 
 // const node = document.createElement(element.type);
 // node['title'] = element.props.title as string;

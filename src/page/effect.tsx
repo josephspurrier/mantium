@@ -1,14 +1,12 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { m } from '../lib';
-import { useEffect } from '../lib/useeffect';
-import { batchState, useState } from '../lib/usestate';
 
 export function Top(): JSX.Element {
-  const [count, setCount] = useState(0);
-  const [, setCount2] = useState(0);
+  const [count, setCount] = m.useState(0);
+  const [, setCount2] = m.useState(0);
 
   // Run only once.
-  useEffect(() => {
+  m.useEffect(() => {
     console.log('Top rendered');
     return () => console.log('top done');
   }, []);
@@ -27,7 +25,7 @@ export function Top(): JSX.Element {
       <div>All of the divs below are clicked to demonstration useEffect.</div>
       <div
         onClick={() => {
-          batchState(() => {
+          m.batchState(() => {
             setCount((prev) => prev + 1);
             setCount2((prev) => prev + 1);
           });
@@ -42,10 +40,10 @@ export function Top(): JSX.Element {
 }
 
 function Middle() {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = m.useState(0);
 
   // Only run when count changes.
-  useEffect(() => {
+  m.useEffect(() => {
     console.log('Middle rendered');
     return () => console.log('middle done');
   }, [count]);
@@ -62,10 +60,10 @@ function Middle() {
 }
 
 function Bottom() {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = m.useState(0);
 
   // Run on any state change/redraws.
-  useEffect(() => {
+  m.useEffect(() => {
     console.log('Bottom rendered');
     return () => console.log('bottom done');
   });

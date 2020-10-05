@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { m } from '../lib';
+import { m } from '../lib/v2';
 
 export const Page2 = (): JSX.Element => {
   // Examples of what not to do
@@ -7,7 +7,7 @@ export const Page2 = (): JSX.Element => {
   const [, setPost] = m.useState('test');
   // Don't use a useState setter outside of a useEffect because it will trigger
   // a redraw.
-  setPost('another');
+  setPost(() => 'another');
 
   // Don't call redraw() outside of a useEffect because it will trigger a
   // redraw.
