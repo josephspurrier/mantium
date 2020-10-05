@@ -46,11 +46,13 @@ interface Fiber {
   parent?: Fiber;
   sibling?: Fiber;
   child?: Fiber;
-  hooks?: Hook<unknown>[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  hooks?: Hook<any>[];
   effectTag?: string;
 }
 
 interface Hook<T> {
+  initial: T;
   state: T;
   queue: ((value: T) => T)[];
 }
@@ -150,7 +152,7 @@ function createDom(fiber: Fiber): HTMLElement | DocumentFragment | Text {
 const isEvent = (key: string) => key.startsWith('on');
 const isProperty = (key: string) => key !== 'children' && !isEvent(key);
 const isNew = (prev: Props, next: Props) => (key: string) => {
-  return String(prev[key]) !== String(next[key]);
+  return prev[key] !== next[key];
 };
 const isGone = (prev: Props, next: Props) => (key: string) => !(key in next);
 
@@ -168,13 +170,6 @@ function updateDom(
       const eventType = name.toLowerCase().substring(2);
       // TODO: I added this check because it could be null?
       if (prevProps[name]) {
-        console.log(
-          'remove listener:',
-          prevProps[name],
-          nextProps,
-          prevProps,
-          name,
-        );
         dom.removeEventListener(eventType, prevProps[name] as () => void);
       }
     });
@@ -187,7 +182,7 @@ function updateDom(
       .filter(isGone(prevProps, nextProps))
       .forEach((name) => {
         //dom[name] = '';
-        console.log('remove key');
+        //console.log('remove key');
         dom.setAttribute(name, '');
       });
     //console.log('nextProps', nextProps);
@@ -196,8 +191,7 @@ function updateDom(
       .filter(isProperty)
       .filter(isNew(prevProps, nextProps))
       .forEach((name) => {
-        //dom[name] = nextProps[name];
-        console.log('change key');
+        // console.log('change key');
         dom.setAttribute(name, String(nextProps[name]));
       });
   } else if (dom instanceof Text) {
@@ -213,11 +207,7 @@ function updateDom(
     .filter(isNew(prevProps, nextProps))
     .forEach((name) => {
       const eventType = name.toLowerCase().substring(2);
-      console.log('add listener');
       dom.addEventListener(eventType, nextProps[name] as () => void);
-      // dom.addEventListener(eventType, () => {
-      //   console.log('clicked!');
-      // });
     });
 }
 
@@ -517,38 +507,39 @@ function useState<T>(initial: T): [T, (action: (prevVal: T) => T) => void] {
     wipFiber.alternate.hooks &&
     wipFiber.alternate.hooks[hookIndex];
   const hook: Hook<T> = {
+    initial: initial,
     state: oldHook ? (oldHook.state as T) : initial,
-    queue: [] as ((prev: T) => T)[],
+    queue: [],
   };
 
   const actions = oldHook ? oldHook.queue : [];
   actions.forEach((action) => {
     hook.state = action(hook.state) as T;
-    console.log('calling hook:', hook.state);
   });
 
   // TODO: This only looks like it supports a function, but we'll work with it for now.
-  const setState = function (action: (prev: T) => T): void {
-    console.log('change:', action, hook.state);
+  function setState(action: (prev: T) => T): void {
     hook.queue.push(action);
     redraw('setState');
-  };
+  }
 
   // TODO: I added this, may need to see if the index should be in or out.
   if (wipFiber) {
     // TODO: I added this too.
     if (!wipFiber.hooks) {
-      wipFiber.hooks = [] as Hook<unknown>[];
+      wipFiber.hooks = [];
     }
     // TODO: This looks weird.
-    wipFiber.hooks.push(hook as Hook<unknown>);
+    wipFiber.hooks.push(hook);
     hookIndex++;
   }
+
   return [hook.state, setState];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function redraw(origin = ''): void {
-  console.log('redraw:', origin);
+  //console.log('redraw:', origin);
 
   // TODO: I added this on currentRoot.
   if (currentRoot) {

@@ -110,7 +110,7 @@ export const UITestPage = (): JSX.Element => {
   return (
     <div class='app'>
       <div>Don't change</div>
-      {/* <a title='home' href='#/'>
+      <a title='home' href='#/'>
         Back
       </a>
 
@@ -161,11 +161,12 @@ export const UITestPage = (): JSX.Element => {
 
       <FragLevel1 />
 
-      <hr /> */}
+      <hr />
 
       <BooleanFlip />
+      <BooleanFlip />
 
-      {/* <hr />
+      <hr />
 
       <Meiosis />
       <Meiosis />
@@ -179,7 +180,7 @@ export const UITestPage = (): JSX.Element => {
         {alphabet.map((n) => (
           <li key={n}>{n}</li>
         ))}
-      </ul> */}
+      </ul>
     </div>
   );
 };
