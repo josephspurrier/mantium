@@ -149,8 +149,9 @@ function createDom(fiber: Fiber): HTMLElement | DocumentFragment | Text {
 
 const isEvent = (key: string) => key.startsWith('on');
 const isProperty = (key: string) => key !== 'children' && !isEvent(key);
-const isNew = (prev: Props, next: Props) => (key: string) =>
-  prev[key] !== next[key];
+const isNew = (prev: Props, next: Props) => (key: string) => {
+  return prev[key] !== next[key];
+};
 const isGone = (prev: Props, next: Props) => (key: string) => !(key in next);
 
 function updateDom(
@@ -158,6 +159,7 @@ function updateDom(
   prevProps: Props,
   nextProps: Props,
 ) {
+  //console.log('prop change:', prevProps, nextProps);
   // Remove old or changed event listeners
   Object.keys(prevProps)
     .filter(isEvent)
@@ -166,6 +168,13 @@ function updateDom(
       const eventType = name.toLowerCase().substring(2);
       // TODO: I added this check because it could be null?
       if (prevProps[name]) {
+        console.log(
+          'remove listener:',
+          prevProps[name],
+          nextProps,
+          prevProps,
+          name,
+        );
         dom.removeEventListener(eventType, prevProps[name] as () => void);
       }
     });
@@ -178,22 +187,24 @@ function updateDom(
       .filter(isGone(prevProps, nextProps))
       .forEach((name) => {
         //dom[name] = '';
+        console.log('remove key');
         dom.setAttribute(name, '');
       });
-
     //console.log('nextProps', nextProps);
-
     // Set new or changed properties
     Object.keys(nextProps)
       .filter(isProperty)
       .filter(isNew(prevProps, nextProps))
       .forEach((name) => {
         //dom[name] = nextProps[name];
+        console.log('change key');
         dom.setAttribute(name, String(nextProps[name]));
       });
   } else if (dom instanceof Text) {
     // Else just set the node value.
-    dom.nodeValue = nextProps.nodeValue as string;
+    if (nextProps.nodeValue !== prevProps.nodeValue) {
+      dom.nodeValue = nextProps.nodeValue as string;
+    }
   }
 
   // Add event listeners
@@ -202,6 +213,7 @@ function updateDom(
     .filter(isNew(prevProps, nextProps))
     .forEach((name) => {
       const eventType = name.toLowerCase().substring(2);
+      console.log('add listener');
       dom.addEventListener(eventType, nextProps[name] as () => void);
       // dom.addEventListener(eventType, () => {
       //   console.log('clicked!');
@@ -340,9 +352,10 @@ function workLoop(deadline: IdleDeadline) {
 }
 
 function performUnitOfWork(fiber: Fiber): Fiber | undefined {
+  //console.log('performWork:', fiber);
   const isFunctionComponent = fiber.type instanceof Function;
   if (isFunctionComponent) {
-    console.log('funccomponent:', fiber);
+    //console.log('funccomponent:', fiber);
     updateFunctionComponent(fiber);
   } else {
     //console.log('beforeHost:', fiber);
@@ -426,27 +439,14 @@ function reconcileChildren(
 
       // If the fiber already exists, then just update it.
       if (oldFiber && sameType) {
-        if (!shallowEqual(oldFiber.props, curFiber.props)) {
-          console.log('Not equal:', oldFiber.props, curFiber.props);
-          newFiber = {
-            type: oldFiber.type,
-            props: element.props,
-            dom: oldFiber.dom,
-            parent: curFiber,
-            alternate: oldFiber,
-            effectTag: 'UPDATE',
-          };
-        } else {
-          console.log('nochange!');
-          newFiber = {
-            type: oldFiber.type,
-            props: element.props,
-            dom: oldFiber.dom,
-            parent: curFiber,
-            alternate: oldFiber,
-            effectTag: 'NOCHANGE',
-          };
-        }
+        newFiber = {
+          type: oldFiber.type,
+          props: element.props,
+          dom: oldFiber.dom,
+          parent: curFiber,
+          alternate: oldFiber,
+          effectTag: 'UPDATE',
+        };
       }
 
       // If the fiber doesn't exist yet, set it to create.
@@ -490,25 +490,25 @@ function reconcileChildren(
   return [firstSibling, prevSibling];
 }
 
-export const shallowEqual = (
-  object1: JSX.ElementAttrs,
-  object2: JSX.ElementAttrs,
-): boolean => {
-  const keys1 = Object.keys(object1);
-  const keys2 = Object.keys(object2);
+// export const shallowEqual = (
+//   object1: JSX.ElementAttrs,
+//   object2: JSX.ElementAttrs,
+// ): boolean => {
+//   const keys1 = Object.keys(object1);
+//   const keys2 = Object.keys(object2);
 
-  if (keys1.length !== keys2.length) {
-    return false;
-  }
+//   if (keys1.length !== keys2.length) {
+//     return false;
+//   }
 
-  for (const key of keys1) {
-    if (String(object1[key]) !== String(object2[key])) {
-      return false;
-    }
-  }
+//   for (const key of keys1) {
+//     if (String(object1[key]) !== String(object2[key])) {
+//       return false;
+//     }
+//   }
 
-  return true;
-};
+//   return true;
+// };
 
 function useState<T>(initial: T): [T, (action: (prevVal: T) => T) => void] {
   const oldHook =
@@ -524,10 +524,12 @@ function useState<T>(initial: T): [T, (action: (prevVal: T) => T) => void] {
   const actions = oldHook ? oldHook.queue : [];
   actions.forEach((action) => {
     hook.state = action(hook.state) as T;
+    console.log('calling hook:', hook.state);
   });
 
   // TODO: This only looks like it supports a function, but we'll work with it for now.
   const setState = function (action: (prev: T) => T): void {
+    console.log('change:', action, hook.state);
     hook.queue.push(action);
     redraw('setState');
   };
