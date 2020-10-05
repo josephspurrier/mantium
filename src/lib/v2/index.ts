@@ -150,7 +150,7 @@ function createDom(fiber: Fiber): HTMLElement | DocumentFragment | Text {
 const isEvent = (key: string) => key.startsWith('on');
 const isProperty = (key: string) => key !== 'children' && !isEvent(key);
 const isNew = (prev: Props, next: Props) => (key: string) => {
-  return prev[key] !== next[key];
+  return String(prev[key]) !== String(next[key]);
 };
 const isGone = (prev: Props, next: Props) => (key: string) => !(key in next);
 
