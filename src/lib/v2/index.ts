@@ -214,30 +214,38 @@ function updateDom(
 
 function commitRoot() {
   console.log('CommitRoot:', wipRoot);
-  deletions.forEach(commitWork);
-  // TODO: I added this because wipRoot could be null?
+
+  // Process each deletion, but don't process siblings.
+  deletions.forEach((fiber: Fiber) => {
+    commitWork(fiber, false);
+  });
+
   if (wipRoot) {
-    commitWork(wipRoot.child);
+    commitWork(wipRoot.child, true);
   }
   currentRoot = wipRoot;
   wipRoot = undefined;
 }
 
-function commitWork(fiber: Fiber | undefined) {
+function commitWork(fiber: Fiber | undefined, sibiling: boolean) {
   if (!fiber) {
     return;
   }
 
   let domParentFiber = fiber.parent;
-  // TODO: I added the check for domParentFiber because it could be null.
+
+  // For the fiber that was passed (and it could be a deletion), get the parent
+  // and if the parent doesn't have a dom, then get the grandparent, and
+  // continue upwards until a dom is found.
   if (domParentFiber) {
     while (domParentFiber && !domParentFiber.dom) {
       domParentFiber = domParentFiber.parent;
     }
 
-    // TODO: Typescript required this because it wouldn't take the top value;
-    if (domParentFiber) {
-      const domParent = domParentFiber.dom;
+    // Once a parent is found with a dom, check the fiber tag to see what
+    // operation needs to be handled on it.
+    const domParent = domParentFiber && domParentFiber.dom;
+    if (domParent) {
       if (fiber.effectTag === 'PLACEMENT' && fiber.dom) {
         // TODO: I added this check.
         if (domParent) {
@@ -260,11 +268,12 @@ function commitWork(fiber: Fiber | undefined) {
           console.log('MISSING DOMPARENT!');
         }
       }
+      commitWork(fiber.child, true);
+      if (sibiling) {
+        commitWork(fiber.sibling, true);
+      }
     }
   }
-
-  commitWork(fiber.child);
-  commitWork(fiber.sibling);
 }
 
 function commitDeletion(
@@ -274,7 +283,6 @@ function commitDeletion(
   if (fiber.dom) {
     domParent.removeChild(fiber.dom);
   } else {
-    // TODO: I added this check.
     if (fiber.child) {
       commitDeletion(fiber.child, domParent);
     }
@@ -313,16 +321,30 @@ function renderNow(element: MNode, container: HTMLElement): void {
 }
 
 function render(element: MNode, container: HTMLElement): void {
-  rootParent = container;
-  wipRoot = {
-    dom: container,
-    props: {
-      children: [element],
-    },
-    alternate: currentRoot,
-  };
-  deletions = [];
-  nextUnitOfWork = wipRoot;
+  if (currentRoot) {
+    // Redraw.
+    wipRoot = {
+      dom: currentRoot.dom,
+      props: {
+        children: [element],
+      },
+      alternate: currentRoot,
+    };
+    deletions = [];
+    nextUnitOfWork = wipRoot;
+  } else {
+    // First draw.
+    rootParent = container;
+    wipRoot = {
+      dom: container,
+      props: {
+        children: [element],
+      },
+      alternate: currentRoot,
+    };
+    deletions = [];
+    nextUnitOfWork = wipRoot;
+  }
 }
 
 function workLoop(deadline: IdleDeadline) {
@@ -409,7 +431,8 @@ function reconcileChildren(
 
     // Handle fragments.
     //console.log('element:', curFiber, elements, elements.length, index);
-    if (element.type === 'FRAGMENT') {
+    if (element && element.type === 'FRAGMENT') {
+      console.log('FRAGMENT!');
       if (element.props.children) {
         const [firstSib, lastSibling] = reconcileChildren(
           curFiber,
