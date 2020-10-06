@@ -214,20 +214,17 @@ function updateDom(
 
 function commitRoot() {
   console.log('CommitRoot:', wipRoot);
-
   // Process each deletion, but don't process siblings.
-  deletions.forEach((fiber: Fiber) => {
-    commitWork(fiber, false);
-  });
+  deletions.forEach(commitWork);
 
   if (wipRoot) {
-    commitWork(wipRoot.child, true);
+    commitWork(wipRoot.child);
   }
   currentRoot = wipRoot;
   wipRoot = undefined;
 }
 
-function commitWork(fiber: Fiber | undefined, sibiling: boolean) {
+function commitWork(fiber: Fiber | undefined) {
   if (!fiber) {
     return;
   }
@@ -260,6 +257,7 @@ function commitWork(fiber: Fiber | undefined, sibiling: boolean) {
         } else {
           console.log('MISSING ALTERNATVE!');
         }
+        domParent.appendChild(fiber.dom);
       } else if (fiber.effectTag === 'DELETION') {
         // TODO: I added this check.
         if (domParent) {
@@ -267,11 +265,10 @@ function commitWork(fiber: Fiber | undefined, sibiling: boolean) {
         } else {
           console.log('MISSING DOMPARENT!');
         }
+        return;
       }
-      commitWork(fiber.child, true);
-      if (sibiling) {
-        commitWork(fiber.sibling, true);
-      }
+      commitWork(fiber.child);
+      commitWork(fiber.sibling);
     }
   }
 }
