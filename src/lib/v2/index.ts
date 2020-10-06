@@ -215,16 +215,23 @@ function updateDom(
 function commitRoot() {
   console.log('CommitRoot:', wipRoot);
   // Process each deletion, but don't process siblings.
-  deletions.forEach(commitWork);
+  deletions.forEach((fiber: Fiber) => {
+    if (fiber.dom) {
+      commitWork(fiber, false);
+    } else {
+      console.log('Found fragment on delete');
+      commitWork(fiber, true);
+    }
+  });
 
   if (wipRoot) {
-    commitWork(wipRoot.child);
+    commitWork(wipRoot.child, false);
   }
   currentRoot = wipRoot;
   wipRoot = undefined;
 }
 
-function commitWork(fiber: Fiber | undefined) {
+function commitWork(fiber: Fiber | undefined, sibling: boolean) {
   if (!fiber) {
     return;
   }
@@ -261,14 +268,14 @@ function commitWork(fiber: Fiber | undefined) {
       } else if (fiber.effectTag === 'DELETION') {
         // TODO: I added this check.
         if (domParent) {
-          commitDeletion(fiber, domParent);
+          commitDeletion(fiber, domParent, sibling);
         } else {
           console.log('MISSING DOMPARENT!');
         }
         return;
       }
-      commitWork(fiber.child);
-      commitWork(fiber.sibling);
+      commitWork(fiber.child, false);
+      commitWork(fiber.sibling, false);
     }
   }
 }
@@ -276,13 +283,17 @@ function commitWork(fiber: Fiber | undefined) {
 function commitDeletion(
   fiber: Fiber,
   domParent: HTMLElement | DocumentFragment | Text,
+  sibling: boolean,
 ) {
   if (fiber.dom) {
     domParent.removeChild(fiber.dom);
   } else {
     if (fiber.child) {
-      commitDeletion(fiber.child, domParent);
+      commitDeletion(fiber.child, domParent, true);
     }
+  }
+  if (sibling && fiber.sibling) {
+    commitDeletion(fiber.sibling, domParent, true);
   }
 }
 
