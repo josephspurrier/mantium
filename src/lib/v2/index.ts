@@ -134,7 +134,7 @@ function createElement(
   };
 
   return {
-    type,
+    type: type ? type : 'FRAGMENT',
     props: {
       ...props,
       children: getChildren(children),
