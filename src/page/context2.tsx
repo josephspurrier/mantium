@@ -1,16 +1,19 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { m } from '../lib';
-import { useContext } from '../lib/usecontext';
-import { UserContext } from './context';
+import { m } from '../lib/v2';
+//import { useContext } from '../lib/usecontext';
+//import { UserContext } from './context';
+//
+//
 
 export const ContextChild1 = (): JSX.Element => {
-  const [value, setValue] = useContext(UserContext);
+  //const [value, setValue] = useContext(UserContext);
+  const value = 'moose';
   return (
     <>
       <div>Child 1 value: {value}</div>
       <button
         onclick={() => {
-          setValue('duck');
+          //setValue('duck');
         }}
       >
         Change 2
@@ -20,13 +23,14 @@ export const ContextChild1 = (): JSX.Element => {
 };
 
 export const ContextChild2 = (): JSX.Element => {
-  const [value, setValue] = useContext(UserContext);
+  //const [value, setValue] = useContext(UserContext);
+  const value = 'moose';
   return (
     <>
       <div>Child 2 value: {value}</div>
       <button
         onclick={() => {
-          setValue('fish');
+          //setValue('fish');
         }}
       >
         Change 2
