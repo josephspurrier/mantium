@@ -1,4 +1,36 @@
+// If true, then will output verbose console.log messages.
 let verbose = false;
+
+function setVerbose(value: boolean): void {
+  verbose = value;
+}
+
+// If false, then will stop the requestIdleCallback loop.
+let runWork = true;
+
+function setWorkMode(value: boolean): void {
+  runWork = value;
+}
+
+// Function that commits the work to the dom.
+let commitWorkFunc = commitRoot;
+
+function setCommitWorkFunc(
+  value: (deletes: Fiber[], wip: Fiber) => void,
+): void {
+  commitWorkFunc = value;
+}
+
+function resetCommitWorkFunc(): void {
+  commitWorkFunc = commitRoot;
+}
+
+const config = {
+  setVerbose,
+  setWorkMode,
+  setCommitWorkFunc,
+  resetCommitWorkFunc,
+};
 
 export const m = {
   createElement,
@@ -9,12 +41,8 @@ export const m = {
   redraw,
   route,
   rendered,
-  setVerbose,
+  config,
 };
-
-function setVerbose(value: boolean): void {
-  verbose = value;
-}
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -45,7 +73,7 @@ interface MNode {
   props: Props;
 }
 
-interface Fiber {
+export interface Fiber {
   type?: string | ((props: Props) => MNode);
   dom?: HTMLElement | DocumentFragment | Text;
   props: Props;
@@ -220,11 +248,11 @@ function updateDom(
     });
 }
 
-function commitRoot() {
-  if (verbose) console.log('CommitRoot:', wipRoot);
+function commitRoot(deletes: Fiber[], wip: Fiber) {
+  if (verbose) console.log('CommitRoot:', wip);
 
   // Process each deletion, but don't process siblings.
-  deletions.forEach((fiber: Fiber) => {
+  deletes.forEach((fiber: Fiber) => {
     if (fiber.dom) {
       commitWork(fiber, false);
     } else {
@@ -233,10 +261,10 @@ function commitRoot() {
     }
   });
 
-  if (wipRoot) {
-    commitWork(wipRoot.child, false);
+  if (wip) {
+    commitWork(wip.child, false);
   }
-  currentRoot = wipRoot;
+  currentRoot = wip;
   wipRoot = undefined;
 }
 
@@ -346,7 +374,7 @@ function render(
   workDone = false;
 
   let element: MNode;
-  if ((rawElement as MNode).type) {
+  if ((rawElement as MNode).props || (rawElement as MNode).type) {
     element = rawElement as MNode;
   } else {
     element = createElement('FRAGMENT', {}, String(rawElement));
@@ -396,18 +424,15 @@ function workLoop(deadline: IdleDeadline) {
     if (wipRoot) {
       //console.log('wipRoot:', wipRoot);
     }
-    commitRoot();
+    commitWorkFunc(deletions, wipRoot);
   } else {
     if (!workDone) {
       workDone = true;
-      //console.log('ok');
-      //if (renderedCallback) {
-      renderedCallback();
-      //}
+      if (renderedCallback) renderedCallback();
     }
   }
 
-  requestIdleCallback(workLoop);
+  if (runWork) requestIdleCallback(workLoop);
 }
 
 function performUnitOfWork(fiber: Fiber): Fiber | undefined {
