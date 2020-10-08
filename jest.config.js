@@ -84,6 +84,8 @@ module.exports = {
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
   // modulePathIgnorePatterns: [],
 
+  modulePathIgnorePatterns: ['archive'],
+
   // Activates notifications for test results
   // notify: false,
 
@@ -124,6 +126,7 @@ module.exports = {
 
   // The paths to modules that run some code to configure or set up the testing environment before each test
   // setupFiles: [],
+  setupFiles: ['./src/lib/v2/test/polyfill.ts'],
 
   // A list of paths to modules that run some code to configure or set up the testing framework before each test
   // setupFilesAfterEnv: [],

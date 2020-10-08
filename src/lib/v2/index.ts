@@ -1,3 +1,5 @@
+let verbose = false;
+
 export const m = {
   createElement,
   createFragment,
@@ -6,7 +8,13 @@ export const m = {
   useState,
   redraw,
   route,
+  rendered,
+  setVerbose,
 };
+
+function setVerbose(value: boolean): void {
+  verbose = value;
+}
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -213,7 +221,8 @@ function updateDom(
 }
 
 function commitRoot() {
-  console.log('CommitRoot:', wipRoot);
+  if (verbose) console.log('CommitRoot:', wipRoot);
+
   // Process each deletion, but don't process siblings.
   deletions.forEach((fiber: Fiber) => {
     if (fiber.dom) {
@@ -328,7 +337,21 @@ function renderNow(element: MNode, container: HTMLElement): void {
   }
 }
 
-function render(element: MNode, container: HTMLElement): void {
+let workDone = false;
+
+function render(
+  rawElement: MNode | string | number | boolean,
+  container: HTMLElement,
+): void {
+  workDone = false;
+
+  let element: MNode;
+  if ((rawElement as MNode).type) {
+    element = rawElement as MNode;
+  } else {
+    element = createElement('FRAGMENT', {}, String(rawElement));
+  }
+
   if (currentRoot) {
     // Redraw.
     wipRoot = {
@@ -355,6 +378,12 @@ function render(element: MNode, container: HTMLElement): void {
   }
 }
 
+let renderedCallback: () => void;
+
+function rendered(callback: () => void): void {
+  renderedCallback = callback;
+}
+
 function workLoop(deadline: IdleDeadline) {
   let shouldYield = false;
   while (nextUnitOfWork && !shouldYield) {
@@ -368,6 +397,14 @@ function workLoop(deadline: IdleDeadline) {
       //console.log('wipRoot:', wipRoot);
     }
     commitRoot();
+  } else {
+    if (!workDone) {
+      workDone = true;
+      //console.log('ok');
+      //if (renderedCallback) {
+      renderedCallback();
+      //}
+    }
   }
 
   requestIdleCallback(workLoop);
@@ -440,7 +477,7 @@ function reconcileChildren(
     // Handle fragments.
     //console.log('element:', curFiber, elements, elements.length, index);
     if (element && element.type === 'FRAGMENT') {
-      console.log('FRAGMENT!');
+      if (verbose) console.log('FRAGMENT!');
       if (element.props.children) {
         const [firstSib, lastSibling] = reconcileChildren(
           curFiber,
@@ -582,7 +619,7 @@ function redraw(origin = ''): void {
       alternate: currentRoot,
     };
   }
-  console.log('Redraw WipRoot:', wipRoot);
+  if (verbose) console.log('Redraw WipRoot:', wipRoot);
   nextUnitOfWork = wipRoot;
   deletions = [];
 }
