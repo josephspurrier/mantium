@@ -89,6 +89,95 @@ test('render fragment', (done) => {
   });
 });
 
+test('render with div and then rerender with fragment', (done) => {
+  m.render(
+    <div>
+      <div>element 1</div>
+      <div>element 2</div>
+    </div>,
+    document.body,
+  );
+
+  m.rendered(() => {
+    m.render(
+      <>
+        <div>element 3</div>
+        <div>element 4</div>
+      </>,
+      document.body,
+    );
+
+    renderDone(done, () => {
+      expect(document.body.outerHTML).toBe(
+        '<body><div>element 3</div><div>element 4</div></body>',
+      );
+    });
+  });
+});
+
+test('render with fragment and then rerender with div', (done) => {
+  m.render(
+    <>
+      <div>element 1</div>
+      <div>element 2</div>
+    </>,
+    document.body,
+  );
+
+  m.rendered(() => {
+    m.render(
+      <div>
+        <div>element 3</div>
+        <div>element 4</div>
+      </div>,
+      document.body,
+    );
+
+    renderDone(done, () => {
+      expect(document.body.outerHTML).toBe(
+        '<body><div><div>element 3</div><div>element 4</div></div></body>',
+      );
+    });
+  });
+});
+
+test('render with div and then rerender with fragment with different elements', (done) => {
+  m.render(
+    <div>
+      <div>element 1</div>
+      <div>element 2</div>
+    </div>,
+    document.body,
+  );
+
+  function Child() {
+    return (
+      <>
+        <div>element 4</div>
+      </>
+    );
+  }
+
+  function Element() {
+    return (
+      <>
+        <span>element 3</span>
+        <Child />
+      </>
+    );
+  }
+
+  m.rendered(() => {
+    m.render(<Element />, document.body);
+
+    renderDone(done, () => {
+      expect(document.body.outerHTML).toBe(
+        '<body><span>element 3</span><div>element 4</div></body>',
+      );
+    });
+  });
+});
+
 // test('render testing', (done) => {
 //   m.config.setWorkMode(false);
 //   m.config.setCommitWorkFunc((deletions: Fiber[], wip: Fiber) => {

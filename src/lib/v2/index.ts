@@ -258,7 +258,7 @@ function commitRoot(deletes: Fiber[], wip: Fiber) {
     if (fiber.dom) {
       commitWork(fiber, false);
     } else {
-      console.log('Found fragment on delete', fiber);
+      //console.log('Found fragment on delete', fiber);
       commitWork(fiber, false);
     }
   });
@@ -292,7 +292,17 @@ function commitWork(fiber: Fiber | undefined, sibling: boolean) {
       if (fiber.effectTag === 'PLACEMENT' && fiber.dom) {
         // TODO: I added this check.
         if (domParent) {
-          domParent.appendChild(fiber.dom);
+          if (fiber.dom.previousSibling || fiber.dom.nextSibling) {
+            console.log('place previous:', fiber.dom.previousSibling);
+            console.log('place next:', fiber.dom.nextSibling);
+          }
+          if (!fiber.sibling && domParent.childNodes.length > 0) {
+            console.log('Inserting before:', fiber.dom);
+            domParent.insertBefore(fiber.dom, domParent.childNodes[0]);
+          } else {
+            //console.log('PLACEMENT:', fiber, domParent.childNodes.length);
+            domParent.appendChild(fiber.dom);
+          }
         } else {
           console.log('MISSING PARENT!');
         }
@@ -307,6 +317,10 @@ function commitWork(fiber: Fiber | undefined, sibling: boolean) {
           console.log('MISSING ALTERNATVE!');
         }
         //domParent.appendChild(fiber.dom);
+        //domParent.replaceChild(fiber.dom, fiber.dom);
+
+        console.log('update previous:', fiber.dom.previousSibling);
+        console.log('update next:', fiber.dom.nextSibling);
       } else if (fiber.effectTag === 'DELETION') {
         // TODO: I added this check.
         if (domParent) {
@@ -378,6 +392,8 @@ function render(
 ): void {
   workDone = false;
 
+  //console.log('Render:', rawElement, container);
+
   let element: MNode;
   if ((rawElement as MNode).props || (rawElement as MNode).type) {
     element = rawElement as MNode;
@@ -433,7 +449,12 @@ function workLoop(deadline: IdleDeadline) {
   } else {
     if (!workDone) {
       workDone = true;
-      if (renderedCallback) renderedCallback();
+      if (renderedCallback) {
+        renderedCallback();
+        // Reset it after it's called.
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        //renderedCallback = () => {};
+      }
     }
   }
 
@@ -714,6 +735,7 @@ function currentURL(): string {
 
 // Router will render the page based on the route to the DOM.
 function router(): void {
+  //console.log('router called!');
   const url = currentURL();
   const routeResolved = resolveRoute(url);
   if (routeResolved) {
