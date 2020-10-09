@@ -9,7 +9,7 @@ export const ContextChild1 = (): JSX.Element => {
   //const [value, setValue] = useContext(UserContext);
   const value = 'moose';
   return (
-    <>
+    <div>
       <div>Child 1 value: {value}</div>
       <button
         onclick={() => {
@@ -18,7 +18,7 @@ export const ContextChild1 = (): JSX.Element => {
       >
         Change 2
       </button>
-    </>
+    </div>
   );
 };
 
@@ -26,7 +26,7 @@ export const ContextChild2 = (): JSX.Element => {
   //const [value, setValue] = useContext(UserContext);
   const value = 'moose';
   return (
-    <>
+    <div>
       <div>Child 2 value: {value}</div>
       <button
         onclick={() => {
@@ -35,13 +35,13 @@ export const ContextChild2 = (): JSX.Element => {
       >
         Change 2
       </button>
-    </>
+    </div>
   );
 };
 
 export const ContextRoot2 = (): JSX.Element => {
   return (
-    <>
+    <div>
       <a title='home' href='#/'>
         Back
       </a>
@@ -54,6 +54,6 @@ export const ContextRoot2 = (): JSX.Element => {
         <ContextChild1 />
         <ContextChild2 />
       </div>
-    </>
+    </div>
   );
 };

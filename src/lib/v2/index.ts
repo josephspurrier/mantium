@@ -253,11 +253,13 @@ function commitRoot(deletes: Fiber[], wip: Fiber) {
 
   // Process each deletion, but don't process siblings.
   deletes.forEach((fiber: Fiber) => {
+    // FIXME: Checking for dom is not correct because it could be a function
+    // and they don't have a DOM.
     if (fiber.dom) {
       commitWork(fiber, false);
     } else {
-      console.log('Found fragment on delete');
-      commitWork(fiber, true);
+      console.log('Found fragment on delete', fiber);
+      commitWork(fiber, false);
     }
   });
 
