@@ -299,11 +299,14 @@ function commitWork(fiber: Fiber | undefined, sibling: boolean) {
       } else if (fiber.effectTag === 'UPDATE' && fiber.dom) {
         // TODO: I added this check.
         if (fiber.alternate) {
+          console.log('UPDATE HERE:', fiber);
+          console.log('UPDATE OLD:', fiber.alternate.props);
+          console.log('UPDATE NEW:', fiber.props);
           updateDom(fiber.dom, fiber.alternate.props, fiber.props);
         } else {
           console.log('MISSING ALTERNATVE!');
         }
-        domParent.appendChild(fiber.dom);
+        //domParent.appendChild(fiber.dom);
       } else if (fiber.effectTag === 'DELETION') {
         // TODO: I added this check.
         if (domParent) {
