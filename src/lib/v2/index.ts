@@ -79,6 +79,7 @@ export interface Fiber {
   props: Props;
   // We also add the alternate property to every fiber. This property is a
   // link to the old fiber, the fiber that we committed to the DOM in the previous commit phase.
+  index: number;
   alternate?: Fiber;
   parent?: Fiber;
   sibling?: Fiber;
@@ -296,9 +297,17 @@ function commitWork(fiber: Fiber | undefined, sibling: boolean) {
             console.log('place previous:', fiber.dom.previousSibling);
             console.log('place next:', fiber.dom.nextSibling);
           }
-          if (!fiber.sibling && domParent.childNodes.length > 0) {
-            console.log('Inserting before:', fiber.dom);
-            domParent.insertBefore(fiber.dom, domParent.childNodes[0]);
+          if (domParent.childNodes.length > fiber.index) {
+            console.log(
+              'Before:',
+              fiber.dom,
+              domParent.childNodes.length,
+              fiber.index,
+            );
+            domParent.insertBefore(
+              fiber.dom,
+              domParent.childNodes[fiber.index],
+            );
           } else {
             //console.log('PLACEMENT:', fiber, domParent.childNodes.length);
             domParent.appendChild(fiber.dom);
@@ -309,9 +318,9 @@ function commitWork(fiber: Fiber | undefined, sibling: boolean) {
       } else if (fiber.effectTag === 'UPDATE' && fiber.dom) {
         // TODO: I added this check.
         if (fiber.alternate) {
-          console.log('UPDATE HERE:', fiber);
-          console.log('UPDATE OLD:', fiber.alternate.props);
-          console.log('UPDATE NEW:', fiber.props);
+          // console.log('UPDATE HERE:', fiber);
+          // console.log('UPDATE OLD:', fiber.alternate.props);
+          // console.log('UPDATE NEW:', fiber.props);
           updateDom(fiber.dom, fiber.alternate.props, fiber.props);
         } else {
           console.log('MISSING ALTERNATVE!');
@@ -319,8 +328,8 @@ function commitWork(fiber: Fiber | undefined, sibling: boolean) {
         //domParent.appendChild(fiber.dom);
         //domParent.replaceChild(fiber.dom, fiber.dom);
 
-        console.log('update previous:', fiber.dom.previousSibling);
-        console.log('update next:', fiber.dom.nextSibling);
+        // console.log('update previous:', fiber.dom.previousSibling);
+        // console.log('update next:', fiber.dom.nextSibling);
       } else if (fiber.effectTag === 'DELETION') {
         // TODO: I added this check.
         if (domParent) {
@@ -409,6 +418,7 @@ function render(
         children: [element],
       },
       alternate: currentRoot,
+      index: 0,
     };
     deletions = [];
     nextUnitOfWork = wipRoot;
@@ -421,6 +431,7 @@ function render(
         children: [element],
       },
       alternate: currentRoot,
+      index: 0,
     };
     deletions = [];
     nextUnitOfWork = wipRoot;
@@ -560,6 +571,7 @@ function reconcileChildren(
           dom: oldFiber.dom,
           parent: curFiber,
           alternate: oldFiber,
+          index: index,
           effectTag: 'UPDATE',
         };
       }
@@ -572,6 +584,7 @@ function reconcileChildren(
           dom: undefined,
           parent: curFiber,
           alternate: undefined,
+          index: index,
           effectTag: 'PLACEMENT',
         };
       }
@@ -674,6 +687,7 @@ function redraw(origin = ''): void {
       dom: currentRoot.dom,
       props: currentRoot.props,
       alternate: currentRoot,
+      index: 0,
     };
   }
   if (verbose) console.log('Redraw WipRoot:', wipRoot);

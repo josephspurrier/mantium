@@ -18,7 +18,7 @@ export const ContextChild1 = (): JSX.Element => {
           //setValue('duck');
         }}
       >
-        Change 2
+        Change 1
       </button>
     </div>
   );
