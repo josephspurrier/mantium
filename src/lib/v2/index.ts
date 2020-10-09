@@ -220,7 +220,7 @@ function updateDom(
       .forEach((name) => {
         //dom[name] = '';
         //console.log('remove key');
-        dom.setAttribute(name, '');
+        dom.removeAttribute(name);
       });
     //console.log('nextProps', nextProps);
     // Set new or changed properties
@@ -310,7 +310,7 @@ function commitWork(fiber: Fiber | undefined, sibling: boolean) {
       } else if (fiber.effectTag === 'DELETION') {
         // TODO: I added this check.
         if (domParent) {
-          commitDeletion(fiber, domParent, sibling);
+          commitDeletion(fiber, domParent, false);
         } else {
           console.log('MISSING DOMPARENT!');
         }
@@ -494,7 +494,7 @@ function reconcileChildren(
   let firstSibling: Fiber | undefined;
   let prevSibling: Fiber | undefined;
 
-  //console.log('Old fiber:', oldFiber);
+  //console.log('elements:', elements.length);
 
   while (index < elements.length || oldFiber !== undefined) {
     const element = elements[index];
@@ -525,7 +525,11 @@ function reconcileChildren(
         oldFiber = undefined;
       }
     } else {
-      const sameType = oldFiber && element && element.type == oldFiber.type;
+      const sameType =
+        oldFiber && element && String(element.type) == String(oldFiber.type);
+
+      //console.log('Old fiber:', oldFiber);
+      //console.log('New fiber:', element);
 
       // If the fiber already exists, then just update it.
       if (oldFiber && sameType) {
@@ -553,6 +557,8 @@ function reconcileChildren(
 
       // If the fiber already exists and is a different type, delete it.
       if (oldFiber && !sameType) {
+        //console.log('DELETION OLD:', oldFiber.type);
+        //console.log('DELETION NEW:', element.type);
         oldFiber.effectTag = 'DELETION';
         deletions.push(oldFiber);
       }
