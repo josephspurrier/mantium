@@ -310,7 +310,7 @@ function commitWork(fiber: Fiber | undefined, sibling: boolean) {
       } else if (fiber.effectTag === 'DELETION') {
         // TODO: I added this check.
         if (domParent) {
-          commitDeletion(fiber, domParent, false);
+          commitDeletion(fiber, domParent, sibling);
         } else {
           console.log('MISSING DOMPARENT!');
         }

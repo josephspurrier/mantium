@@ -3,11 +3,11 @@
 import { m } from './lib/v2';
 import { ErrorPage } from './page/error';
 import { HyperScript } from './page/hyperscript';
-import { JSONRequest } from './page/jsonrequest';
+//import { JSONRequest } from './page/jsonrequest';
 import { MainPage } from './page/main';
 import { Page2 } from './page/page2';
 import { UITestPage } from './page/uitest';
-import { Top } from './page/effect';
+//import { Top } from './page/effect';
 import { ContextRoot } from './page/context';
 import { ContextRoot2 } from './page/context2';
 
