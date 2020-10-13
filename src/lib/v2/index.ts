@@ -251,6 +251,7 @@ function updateDom(
 
 function commitRoot(deletes: Fiber[], wip: Fiber) {
   if (verbose) console.log('CommitRoot:', wip);
+  if (verbose) console.log('Deletions:', deletes);
 
   // Process each deletion, but don't process siblings.
   deletes.forEach((fiber: Fiber) => {
@@ -293,23 +294,36 @@ function commitWork(fiber: Fiber | undefined, sibling: boolean) {
       if (fiber.effectTag === 'PLACEMENT' && fiber.dom) {
         // TODO: I added this check.
         if (domParent) {
-          if (fiber.dom.previousSibling || fiber.dom.nextSibling) {
-            console.log('place previous:', fiber.dom.previousSibling);
-            console.log('place next:', fiber.dom.nextSibling);
-          }
+          // if (fiber.sibling) {
+          //   console.log('place next:', fiber.sibling);
+
+          //   if (fiber.sibling.dom === domParent.firstChild) {
+          //     console.log('BOOP!');
+          //   } else if (fiber.sibling.dom === domParent.lastChild) {
+          //     console.log('BOOP2!');
+          //   } else {
+          //     console.log(
+          //       'yep',
+          //       fiber.sibling.dom,
+          //       domParent.childNodes.length,
+          //     );
+          //   }
+          // }
+
           if (domParent.childNodes.length > fiber.index) {
-            console.log(
-              'Before:',
-              fiber.dom,
-              domParent.childNodes.length,
-              fiber.index,
-            );
+            // console.log(
+            //   'Before:',
+            //   fiber.dom,
+            //   domParent.childNodes.length,
+            //   fiber.index,
+            // );
             domParent.insertBefore(
               fiber.dom,
               domParent.childNodes[fiber.index],
             );
           } else {
-            //console.log('PLACEMENT:', fiber, domParent.childNodes.length);
+            // console.log('PLACEMENT:', fiber, domParent.childNodes.length);
+            // console.log('PLACEMENT:', fiber);
             domParent.appendChild(fiber.dom);
           }
         } else {
@@ -325,6 +339,24 @@ function commitWork(fiber: Fiber | undefined, sibling: boolean) {
         } else {
           console.log('MISSING ALTERNATVE!');
         }
+        //if (!inNodeList(domParent.childNodes, fiber.dom)) {
+        //console.log('Not in node list', fiber.dom, domParent.childNodes);
+        //domParent.appendChild(fiber.dom);
+        //} else {
+        //console.log('In node list!');
+        //}
+        // if (domParent.lastChild !== fiber.dom) {
+        //   console.log(
+        //     'WRONG:',
+        //     domParent.firstChild,
+        //     domParent.lastChild,
+        //     fiber.dom,
+        //   );
+        //   domParent.appendChild(fiber.dom);
+        // } else {
+        //   console.log('Already correct:', domParent.lastChild, fiber.dom);
+        // }
+        //console.log('Location:', domParent.lastChild !== fiber.dom);
         //domParent.appendChild(fiber.dom);
         //domParent.replaceChild(fiber.dom, fiber.dom);
 
@@ -344,6 +376,17 @@ function commitWork(fiber: Fiber | undefined, sibling: boolean) {
     }
   }
 }
+
+// function inNodeList(arr: NodeListOf<ChildNode>, node: Node): boolean {
+//   let v = false;
+//   arr.forEach((item) => {
+//     //console.log('test:', item, node, item.isEqualNode(node));
+//     if (item.isEqualNode(node)) {
+//       v = true;
+//     }
+//   });
+//   return v;
+// }
 
 function commitDeletion(
   fiber: Fiber,
@@ -503,7 +546,7 @@ function updateFunctionComponent(fiber: Fiber) {
   hookIndex = 0;
   wipFiber.hooks = [];
   const children = [fun(fiber.props)] as MNode[];
-  reconcileChildren(fiber, children);
+  reconcileChildren(fiber, children, fiber.index);
 }
 
 function updateHostComponent(fiber: Fiber) {
@@ -513,13 +556,14 @@ function updateHostComponent(fiber: Fiber) {
 
   // TODO: I added this because if children are null, then nothing will happen.
   if (fiber.props.children) {
-    reconcileChildren(fiber, fiber.props.children);
+    reconcileChildren(fiber, fiber.props.children, 0);
   }
 }
 
 function reconcileChildren(
   curFiber: Fiber,
   elements: MNode[],
+  startIndex: number,
 ): [Fiber | undefined, Fiber | undefined] {
   let index = 0;
   let oldFiber = curFiber.alternate && curFiber.alternate.child;
@@ -544,6 +588,7 @@ function reconcileChildren(
         const [firstSib, lastSibling] = reconcileChildren(
           curFiber,
           element.props.children,
+          startIndex,
         );
         if (index === 0) {
           curFiber.child = firstSib;
@@ -571,7 +616,7 @@ function reconcileChildren(
           dom: oldFiber.dom,
           parent: curFiber,
           alternate: oldFiber,
-          index: index,
+          index: index + startIndex,
           effectTag: 'UPDATE',
         };
       }
@@ -584,7 +629,7 @@ function reconcileChildren(
           dom: undefined,
           parent: curFiber,
           alternate: undefined,
-          index: index,
+          index: index + startIndex,
           effectTag: 'PLACEMENT',
         };
       }
