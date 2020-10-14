@@ -1,6 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-//import { m } from './lib';
-import { m } from './lib/v2';
+import { m } from './lib';
+import { TriangleDemo } from './page/triangle';
+//import { m } from './lib/v2';
 // import { ErrorPage } from './page/error';
 // import { HyperScript } from './page/hyperscript';
 //import { JSONRequest } from './page/jsonrequest';
@@ -17,13 +18,13 @@ const root = document.createElement('div');
 root.setAttribute('id', 'root');
 document.body.appendChild(root);
 
-// //m.state.routerPrefix = '#';
-m.route(root, '/', MainPage);
-// // m.route(root, '/app', UITestPage);
-// // m.route(root, '/page2', Page2);
-// // //m.route(root, '/effect', Top);
-m.route(root, '/context', ContextRoot);
-m.route(root, '/context2', ContextRoot2);
+// // //m.state.routerPrefix = '#';
+// m.route(root, '/', MainPage);
+// // // m.route(root, '/app', UITestPage);
+// // // m.route(root, '/page2', Page2);
+// // // //m.route(root, '/effect', Top);
+// m.route(root, '/context', ContextRoot);
+// m.route(root, '/context2', ContextRoot2);
 // // m.route(root, '/hyperscript', HyperScript);
 // // //m.route(root, '/jsonrequest', JSONRequest);
 // // m.route(root, '/404', ErrorPage);
@@ -39,3 +40,5 @@ m.route(root, '/context2', ContextRoot2);
 // // });
 
 //svelteRun(root);
+
+m.render(document.body, TriangleDemo);
