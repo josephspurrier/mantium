@@ -55,13 +55,17 @@ export const TriangleDemo = (): JSX.Element => {
   //console.log('Scale:', scale());
 
   return (
-    <div
-      class='container'
-      style={{
-        transform: `scaleX(${scale() / 2.1}) scaleY(0.7) translateZ(0.1px)`,
-      }}
-    >
-      <Triangle x={0} y={0} s={1000} seconds={seconds} />
+    <div>
+      <h1>Solid Triangle Demo</h1>
+      <p>Try throttling your CPU on Performance tab of Chrome Debugger</p>
+      <div
+        class='container'
+        style={{
+          transform: `scaleX(${scale() / 2.1}) scaleY(0.7) translateZ(0.1px)`,
+        }}
+      >
+        <Triangle x={0} y={0} s={1000} seconds={seconds} />
+      </div>
     </div>
   );
 };
