@@ -4,6 +4,20 @@ const setSingleAttr = (elem: Node, name: string, value: any): void => {
     return;
   } else if (name === 'className') {
     (elem as HTMLElement).setAttribute('class', value);
+  } else if (name === 'style') {
+    if (typeof value === 'object') {
+      let v = '';
+      const keys = Object.keys(value);
+      const values = Object.values(value);
+      for (let i = 0; i < keys.length; i++) {
+        v += `${keys[i]}: ${String(values[i])};`;
+      }
+      // console.log('Style keys:');
+      // console.log('Style values:', Object.values(value));
+      (elem as HTMLElement).setAttribute('style', v);
+    } else {
+      (elem as HTMLElement).setAttribute('style', value);
+    }
   } else if (value === true) {
     // Add attributes that are boolean so they don't have a value, only a name.
     (elem as HTMLElement).setAttribute(name, '');
@@ -14,6 +28,13 @@ const setSingleAttr = (elem: Node, name: string, value: any): void => {
     (elem as HTMLElement).setAttribute(name, value.toString());
   }
 };
+
+// function obsKeysToString(o, k, sep) {
+//   return k
+//     .map((key) => o[key])
+//     .filter((v) => v)
+//     .join(sep);
+// }
 
 export const setAttrs = (elem: HTMLElement, attrs: JSX.ElementAttrs): void => {
   Object.keys(attrs).forEach((name) => {
@@ -62,6 +83,7 @@ const updateSingleAttr = (
   if (!newVal) {
     removeAttrs(elem, name, oldVal);
   } else if (!oldVal || newVal !== oldVal) {
+    //console.log('Test:', elem, name, newVal);
     setSingleAttr(elem, name, newVal);
   }
 };

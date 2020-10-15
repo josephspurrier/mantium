@@ -16,11 +16,16 @@ let config = {
       title: 'mantium',
       filename: path.resolve(__dirname, 'dist', 'index.html'),
       favicon: path.resolve(__dirname, 'static', 'favicon.ico'),
+      template: path.resolve(__dirname, 'template.html'),
     }),
     new CopyWebpackPlugin({
       patterns: [
         {
           from: path.resolve(__dirname, 'static', 'healthcheck.html'),
+          to: 'static/',
+        },
+        {
+          from: path.resolve(__dirname, 'static', 'global.css'),
           to: 'static/',
         },
       ],

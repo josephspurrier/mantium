@@ -14,6 +14,8 @@ import { ContextRoot2 } from './page/context2';
 
 //import { svelteRun } from './lib/v2/svelte';
 
+//import './global.scss';
+
 const root = document.createElement('div');
 root.setAttribute('id', 'root');
 document.body.appendChild(root);
@@ -41,4 +43,4 @@ document.body.appendChild(root);
 
 //svelteRun(root);
 
-m.render(document.body, TriangleDemo);
+m.render(root, TriangleDemo);

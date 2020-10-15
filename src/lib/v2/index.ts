@@ -44,24 +44,24 @@ export const m = {
   config,
 };
 
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace JSX {
-    type Element = MNode;
-    interface ElementAttrs {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      [property: string]: any;
-    }
-    interface IntrinsicElements {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      [elemName: string]: any;
-    }
-    interface ElementChildrenAttribute {
-      // eslint-disable-next-line @typescript-eslint/ban-types
-      children: {}; // specify children name to use
-    }
-  }
-}
+// declare global {
+//   // eslint-disable-next-line @typescript-eslint/no-namespace
+//   namespace JSX {
+//     type Element = MNode;
+//     interface ElementAttrs {
+//       // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//       [property: string]: any;
+//     }
+//     interface IntrinsicElements {
+//       // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//       [elemName: string]: any;
+//     }
+//     interface ElementChildrenAttribute {
+//       // eslint-disable-next-line @typescript-eslint/ban-types
+//       children: {}; // specify children name to use
+//     }
+//   }
+// }
 
 interface Props {
   children?: MNode[];

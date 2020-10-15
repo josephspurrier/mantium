@@ -55,6 +55,7 @@ export const createDocFragment = (node: JSX.Vnode): DocumentFragment => {
     appendChildToNode(frag, node.children);
   } else {
     const elem = document.createElement(node.tag);
+    //console.log('HERE:', elem);
     setAttrs(elem, node.attrs);
     addEventListeners(elem, node.attrs);
     // TODO: Determine why one article suggested to use:

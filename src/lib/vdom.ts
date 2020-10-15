@@ -38,6 +38,7 @@ export const redraw = (origin = ''): void => {
 
   resetStateCounter();
   const rawDesiredState = (state.generateRawState() as unknown) as JSX.Vnode;
+  //console.log('Redraw:', rawDesiredState, state.rootParent);
   if (!state.currentState.tag) {
     state.currentState = cleanState(rawDesiredState);
     updateElement(state.rootParent, state.currentState);
@@ -89,6 +90,7 @@ const updateElement = function (
     const newVnode = newNode as JSX.Vnode;
     const oldVnode = oldNode as JSX.Vnode;
 
+    //console.log('Update:', parent.childNodes, oldVnode, newVnode);
     updateAttrs(parent.childNodes[index], newVnode.attrs, oldVnode.attrs);
     const newLength = newVnode.children.length;
     const oldLength = oldVnode.children.length;

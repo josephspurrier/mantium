@@ -6,28 +6,48 @@ import { useState } from '../lib/usestate';
 
 const TARGET = 25;
 
+// export const TriangleDemo = (): JSX.Element => {
+//   return (
+//     <div
+//       class='container'
+//       style={{
+//         transform: `scaleX(${4.2 / 2.1}) scaleY(0.7) translateZ(0.1px)`,
+//       }}
+//     >
+//       Test
+//     </div>
+//   );
+// };
+
 export const TriangleDemo = (): JSX.Element => {
   const [elapsed, setElapsed] = useState(0);
   const [seconds, setSeconds] = useState(0);
+  const [start] = useState(Date.now());
 
   const [scale] = useState(() => {
-      const e = (elapsed / 1000) % 10;
-      return 1 + (e > 5 ? 10 - e : e) / 10;
-    }),
-    start = Date.now();
+    const e = (elapsed / 1000) % 10;
+    return 1 + (e > 5 ? 10 - e : e) / 10;
+  });
+
+  //const start = Date.now();
+  //console.log('Now', start);
 
   let f: number;
 
   useEffect(() => {
-    const t = setInterval(() => setSeconds((seconds % 10) + 1), 1000);
+    const t = setInterval(() => {
+      setSeconds((prev) => (prev % 10) + 1);
+    }, 1000);
 
     const update = () => {
       setElapsed(Date.now() - start);
+      //console.log('here');
       f = requestAnimationFrame(update);
     };
     f = requestAnimationFrame(update);
-
+    //console.log('add');
     return () => {
+      //console.log('remove');
       clearInterval(t), cancelAnimationFrame(f);
     };
   }, []);
@@ -59,7 +79,12 @@ const Triangle = ({ x, y, s, seconds }: Attrs) => {
   }
   s = s / 2;
 
-  if (s === 62.5) seconds; //seconds = createDeferred(seconds);
+  //console.log('s:', s);
+
+  if (s === 62.5) {
+    //console.log('boom');
+    //seconds; //seconds = createDeferred(seconds);
+  }
 
   // var slowDown = true;
   // if (slowDown) {
@@ -89,6 +114,7 @@ const Dot = ({ x, y, s, text }: Attrs2) => {
   const [hover, setHover] = useState(false),
     onEnter = () => setHover(true),
     onExit = () => setHover(false);
+  //console.log(x, y);
   return (
     <div
       class='dot'
@@ -103,7 +129,8 @@ const Dot = ({ x, y, s, text }: Attrs2) => {
       }}
       onMouseEnter={onEnter}
       onMouseLeave={onExit}
-      textContent={hover ? `**${text}**` : text}
-    />
+    >
+      {hover ? `**${text}**` : text}
+    </div>
   );
 };
