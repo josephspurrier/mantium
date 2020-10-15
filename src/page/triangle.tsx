@@ -24,10 +24,10 @@ export const TriangleDemo = (): JSX.Element => {
   const [seconds, setSeconds] = useState(0);
   const [start] = useState(Date.now());
 
-  const [scale] = useState(() => {
+  const scale = () => {
     const e = (elapsed / 1000) % 10;
     return 1 + (e > 5 ? 10 - e : e) / 10;
-  });
+  };
 
   //const start = Date.now();
   //console.log('Now', start);
@@ -51,6 +51,8 @@ export const TriangleDemo = (): JSX.Element => {
       clearInterval(t), cancelAnimationFrame(f);
     };
   }, []);
+
+  //console.log('Scale:', scale());
 
   return (
     <div
