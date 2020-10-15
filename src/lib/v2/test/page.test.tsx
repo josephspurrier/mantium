@@ -1,5 +1,6 @@
 import { renderDone } from './helper';
 import { m } from '../index';
+import { State } from '../../../page/component/state';
 
 const MainPage = (): JSX.Element => {
   return (
@@ -114,3 +115,17 @@ test('render with div and then rerender with fragment with different elements', 
     });
   });
 });
+
+// test('render state', (done) => {
+//   m.render(MainPage(), document.body);
+
+//   m.rendered(() => {
+//     m.render(State(), document.body);
+
+//     renderDone(done, () => {
+//       expect(document.body.outerHTML).toBe(
+//         `<body><button>Increment Global Variable</button><button>Increment Local + Global Variable</button><button>Increment Local 2</button><button>Try Increment "Never counter" But Fail</button><div>Global counter: 0</div><div>Local counter: 0</div><div>Local counter 2: 5</div><div>Never counter: 0 (Closures modifying local variables without 'useState' won't work with DOM updates. See the Console for output).</div></body>`,
+//       );
+//     });
+//   });
+// });

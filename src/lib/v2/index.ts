@@ -77,6 +77,7 @@ export interface Fiber {
   type?: string | ((props: Props) => MNode);
   dom?: HTMLElement | DocumentFragment | Text;
   props: Props;
+  isFragment: boolean;
   // We also add the alternate property to every fiber. This property is a
   // link to the old fiber, the fiber that we committed to the DOM in the previous commit phase.
   index: number;
@@ -258,34 +259,51 @@ function commitRoot(deletes: Fiber[], wip: Fiber) {
     // FIXME: Checking for dom is not correct because it could be a function
     // and they don't have a DOM.
     if (fiber.dom) {
-      commitWork(fiber, false);
+      commitWork(fiber, false, 0);
     } else {
       //console.log('Found fragment on delete', fiber);
-      commitWork(fiber, false);
+      commitWork(fiber, false, 0);
     }
   });
 
   if (wip) {
-    commitWork(wip.child, false);
+    commitWork(wip.child, false, 0);
   }
   currentRoot = wip;
   wipRoot = undefined;
 }
 
-function commitWork(fiber: Fiber | undefined, sibling: boolean) {
+function commitWork(
+  fiber: Fiber | undefined,
+  sibling: boolean,
+  offset: number,
+): number {
   if (!fiber) {
-    return;
+    return 0;
   }
 
   let domParentFiber = fiber.parent;
+
+  let localOffset = offset;
+  let insideFragment = false;
+
+  console.log('Commit:', localOffset, offset);
 
   // For the fiber that was passed (and it could be a deletion), get the parent
   // and if the parent doesn't have a dom, then get the grandparent, and
   // continue upwards until a dom is found.
   if (domParentFiber) {
+    if (domParentFiber.isFragment) {
+      insideFragment = true;
+    }
     while (domParentFiber && !domParentFiber.dom) {
       domParentFiber = domParentFiber.parent;
+      if (domParentFiber && domParentFiber.isFragment) {
+        insideFragment = true;
+      }
     }
+
+    console.log('InsideFrag:', insideFragment);
 
     // Once a parent is found with a dom, check the fiber tag to see what
     // operation needs to be handled on it.
@@ -310,21 +328,41 @@ function commitWork(fiber: Fiber | undefined, sibling: boolean) {
           //   }
           // }
 
-          if (domParent.childNodes.length > fiber.index) {
-            // console.log(
-            //   'Before:',
-            //   fiber.dom,
-            //   domParent.childNodes.length,
-            //   fiber.index,
-            // );
+          if (insideFragment) console.log('IN a fragment!', localOffset);
+
+          const totalIndex =
+            localOffset > 0 ? localOffset + fiber.index : fiber.index;
+
+          if (domParent.childNodes.length > totalIndex) {
+            console.log(
+              'Before:',
+              fiber.dom,
+              'Length:',
+              domParent.childNodes.length,
+              'Index:',
+              fiber.index,
+              'Offset:',
+              localOffset,
+              'Totalindex:',
+              totalIndex,
+            );
             domParent.insertBefore(
               fiber.dom,
-              domParent.childNodes[fiber.index],
+              domParent.childNodes[fiber.index + localOffset],
             );
           } else {
-            // console.log('PLACEMENT:', fiber, domParent.childNodes.length);
+            console.log(
+              'PLACEMENT:',
+              fiber.dom,
+              fiber.index,
+              localOffset,
+              domParent.childNodes.length,
+            );
             // console.log('PLACEMENT:', fiber);
             domParent.appendChild(fiber.dom);
+            // if (insideFragment) {
+            //   localOffset += fiber.index;
+            // }
           }
         } else {
           console.log('MISSING PARENT!');
@@ -369,12 +407,30 @@ function commitWork(fiber: Fiber | undefined, sibling: boolean) {
         } else {
           console.log('MISSING DOMPARENT!');
         }
-        return;
+        return 0;
       }
-      commitWork(fiber.child, false);
-      commitWork(fiber.sibling, false);
+      const childOffset = commitWork(fiber.child, false, offset);
+      //if (insideFragment) {
+      localOffset += childOffset;
+      //}
+      if (localOffset > 0) {
+        //console.log('Returned', localOffset, insideFragment);
+      }
+      const siblingOffset = commitWork(fiber.sibling, false, localOffset);
+      //if (insideFragment) {
+      localOffset += siblingOffset;
+      //}
+      if (localOffset > 0) {
+        //console.log('Returned finished', localOffset, insideFragment);
+      }
     }
   }
+
+  if (insideFragment) {
+    console.log('YES!!', localOffset);
+  }
+
+  return localOffset > 0 ? localOffset : 0;
 }
 
 // function inNodeList(arr: NodeListOf<ChildNode>, node: Node): boolean {
@@ -462,6 +518,7 @@ function render(
       },
       alternate: currentRoot,
       index: 0,
+      isFragment: false,
     };
     deletions = [];
     nextUnitOfWork = wipRoot;
@@ -475,6 +532,7 @@ function render(
       },
       alternate: currentRoot,
       index: 0,
+      isFragment: false,
     };
     deletions = [];
     nextUnitOfWork = wipRoot;
@@ -564,7 +622,7 @@ function reconcileChildren(
   curFiber: Fiber,
   elements: MNode[],
   startIndex: number,
-): [Fiber | undefined, Fiber | undefined] {
+): [Fiber | undefined, Fiber | undefined, number] {
   let index = 0;
   let oldFiber = curFiber.alternate && curFiber.alternate.child;
   let firstSibling: Fiber | undefined;
@@ -585,15 +643,22 @@ function reconcileChildren(
     if (element && element.type === 'FRAGMENT') {
       if (verbose) console.log('FRAGMENT!');
       if (element.props.children) {
-        const [firstSib, lastSibling] = reconcileChildren(
+        const [firstSib, lastSibling, countAdded] = reconcileChildren(
           curFiber,
           element.props.children,
-          startIndex,
+          index + startIndex,
         );
-        if (index === 0) {
+
+        curFiber.isFragment = true;
+
+        if (index + startIndex === 0) {
           curFiber.child = firstSib;
         }
         prevSibling = lastSibling;
+
+        console.log('Out:', startIndex, countAdded);
+        startIndex += countAdded;
+        console.log('Final:', startIndex);
 
         // TODO: Not sure if this needs to be here on an update?
         // if (oldFiber) {
@@ -606,7 +671,7 @@ function reconcileChildren(
         oldFiber && element && String(element.type) == String(oldFiber.type);
 
       //console.log('Old fiber:', oldFiber);
-      //console.log('New fiber:', element);
+      console.log('New fiber:', element, index + startIndex);
 
       // If the fiber already exists, then just update it.
       if (oldFiber && sameType) {
@@ -618,6 +683,7 @@ function reconcileChildren(
           alternate: oldFiber,
           index: index + startIndex,
           effectTag: 'UPDATE',
+          isFragment: false,
         };
       }
 
@@ -631,6 +697,7 @@ function reconcileChildren(
           alternate: undefined,
           index: index + startIndex,
           effectTag: 'PLACEMENT',
+          isFragment: false,
         };
       }
 
@@ -662,7 +729,7 @@ function reconcileChildren(
   }
 
   // Return the first and last sibling.
-  return [firstSibling, prevSibling];
+  return [firstSibling, prevSibling, index];
 }
 
 // export const shallowEqual = (
@@ -733,6 +800,7 @@ function redraw(origin = ''): void {
       props: currentRoot.props,
       alternate: currentRoot,
       index: 0,
+      isFragment: false,
     };
   }
   if (verbose) console.log('Redraw WipRoot:', wipRoot);

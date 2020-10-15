@@ -9,7 +9,7 @@ export const State = (): JSX.Element => {
 
   let neverWork = 0;
   return (
-    <>
+    <div>
       <button
         onclick={() => {
           globalCounter++;
@@ -51,6 +51,6 @@ export const State = (): JSX.Element => {
         Never counter: {neverWork} (Closures modifying local variables without
         'useState' won't work with DOM updates. See the Console for output).
       </div>
-    </>
+    </div>
   );
 };

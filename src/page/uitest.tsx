@@ -113,7 +113,7 @@ export const UITestPage = (): JSX.Element => {
       <a title='home' href='#/'>
         Back
       </a>
-
+      {/* 
       <p>Welcome back, {firstname}.</p>
 
       <Empty></Empty>
@@ -148,12 +148,12 @@ export const UITestPage = (): JSX.Element => {
       <RequiredTrue required={true} />
       <RequiredFalse required={false} />
 
-      <hr />
+      <hr /> */}
 
-      <State />
-      <State />
+      {/* <State />
+      <State /> */}
 
-      <hr />
+      {/* <hr />
 
       <RedrawButtons />
 
@@ -166,9 +166,9 @@ export const UITestPage = (): JSX.Element => {
       <BooleanFlip />
       <BooleanFlip />
 
-      <hr />
+      <hr /> */}
 
-      <Meiosis />
+      {/* <Meiosis /> */}
       <Meiosis />
 
       <hr />
