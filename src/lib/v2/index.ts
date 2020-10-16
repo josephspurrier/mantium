@@ -402,6 +402,14 @@ function commitWork(
         } else {
           if (fiber.dom) {
             console.log('NON STANDARD REPLACE:', fiber);
+            // if (
+            //   fiber.alternate &&
+            //   fiber.alternate.dom &&
+            //   fiber.alternate.parent &&
+            //   fiber.alternate.parent.dom
+            // ) {
+            //   fiber.alternate.parent.dom.removeChild(fiber.alternate.dom);
+            // }
             domParent.appendChild(fiber.dom);
           } else {
             console.log('MISSING REPLACE DOM');
