@@ -43,7 +43,7 @@ export const ContextChild2 = (): JSX.Element => {
 
 export const ContextRoot = (): JSX.Element => {
   return (
-    <div>
+    <>
       <a title='home' href='#/'>
         Back
       </a>
@@ -56,6 +56,6 @@ export const ContextRoot = (): JSX.Element => {
         <ContextChild1 />
         <ContextChild2 />
       </div>
-    </div>
+    </>
   );
 };

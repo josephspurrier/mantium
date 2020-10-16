@@ -254,6 +254,8 @@ function commitRoot(deletes: Fiber[], wip: Fiber) {
   if (verbose) console.log('CommitRoot:', wip);
   if (verbose) console.log('Deletions:', deletes);
 
+  const stop = deletes.length > 0;
+
   // Process each deletion, but don't process siblings.
   deletes.forEach((fiber: Fiber) => {
     // FIXME: Checking for dom is not correct because it could be a function
@@ -265,6 +267,10 @@ function commitRoot(deletes: Fiber[], wip: Fiber) {
       commitWork(fiber, false, 0);
     }
   });
+
+  if (stop) {
+    //throw new Error('stopped!');
+  }
 
   if (wip) {
     commitWork(wip.child, false, 0);
@@ -373,17 +379,34 @@ function commitWork(
         }
       } else if (fiber.effectTag === 'REPLACE' && fiber.dom) {
         // TODO: I added this check.
-        if (fiber.alternate && fiber.alternate.dom) {
+        if (
+          fiber.alternate &&
+          fiber.alternate.dom &&
+          inNodeList(domParent.childNodes, fiber.alternate.dom)
+        ) {
           // console.log('UPDATE HERE:', fiber);
           // console.log('UPDATE OLD:', fiber.alternate.props);
           // console.log('UPDATE NEW:', fiber.props);
 
+          console.log('REPLACING1:', fiber, fiber.alternate);
           updateDom(fiber.dom, fiber.alternate.props, fiber.props);
-          //console.log('REPLACING:', fiber.type, fiber.alternate.type);
+          console.log('REPLACING2:', fiber, fiber.alternate);
+          //if (domParent.contains(fiber.alternate.dom)) {
           domParent.replaceChild(fiber.dom, fiber.alternate.dom);
-          localOffset = 100;
+          //} else {
+          //console.log('SKIP:', fiber);
+          //throw new Error('Stopped');
+          //domParent.appendChild(fiber.dom);
+          //}
+          //localOffset = 100;
         } else {
-          console.log('MISSING ALTERNATVE!');
+          if (fiber.dom) {
+            console.log('NON STANDARD REPLACE:', fiber);
+            domParent.appendChild(fiber.dom);
+          } else {
+            console.log('MISSING REPLACE DOM');
+          }
+          //console.log('MISSING ALTERNATVE!');
         }
       } else if (fiber.effectTag === 'UPDATE' && fiber.dom) {
         // TODO: I added this check.
@@ -451,16 +474,16 @@ function commitWork(
   return localOffset > 0 ? localOffset : 0;
 }
 
-// function inNodeList(arr: NodeListOf<ChildNode>, node: Node): boolean {
-//   let v = false;
-//   arr.forEach((item) => {
-//     //console.log('test:', item, node, item.isEqualNode(node));
-//     if (item.isEqualNode(node)) {
-//       v = true;
-//     }
-//   });
-//   return v;
-// }
+function inNodeList(arr: NodeListOf<ChildNode>, node: Node): boolean {
+  let v = false;
+  arr.forEach((item) => {
+    //console.log('test:', item, node, item.isEqualNode(node));
+    if (item.isSameNode(node)) {
+      v = true;
+    }
+  });
+  return v;
+}
 
 function commitDeletion(
   fiber: Fiber,
@@ -724,6 +747,16 @@ function reconcileChildren(
         //console.log('DELETION NEW:', element.type);
         oldFiber.effectTag = 'DELETION';
         deletions.push(oldFiber);
+        // newFiber = {
+        //   type: oldFiber.type,
+        //   props: oldFiber.props,
+        //   dom: oldFiber.dom,
+        //   parent: curFiber,
+        //   alternate: oldFiber,
+        //   index: index + startIndex,
+        //   effectTag: 'DELETION',
+        //   isFragment: false,
+        // };
       } else if (element && !sameType) {
         newFiber = {
           type: element.type,
@@ -737,7 +770,7 @@ function reconcileChildren(
         };
         console.log('Fiber REPLACE:', oldFiber, newFiber);
       } else {
-        console.log('SKIP:', element);
+        console.log('SKIP 22:', element);
       }
 
       if (oldFiber) {

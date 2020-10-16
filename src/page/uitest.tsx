@@ -150,10 +150,10 @@ export const UITestPage = (): JSX.Element => {
 
       <hr /> */}
 
-      {/* <State />
-      <State /> */}
+      <State />
+      <State />
 
-      {/* <hr />
+      <hr />
 
       <RedrawButtons />
 
@@ -166,9 +166,9 @@ export const UITestPage = (): JSX.Element => {
       <BooleanFlip />
       <BooleanFlip />
 
-      <hr /> */}
+      <hr />
 
-      {/* <Meiosis /> */}
+      <Meiosis />
       <Meiosis />
 
       <hr />
