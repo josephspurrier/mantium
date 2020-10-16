@@ -44,24 +44,24 @@ export const m = {
   config,
 };
 
-// declare global {
-//   // eslint-disable-next-line @typescript-eslint/no-namespace
-//   namespace JSX {
-//     type Element = MNode;
-//     interface ElementAttrs {
-//       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//       [property: string]: any;
-//     }
-//     interface IntrinsicElements {
-//       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//       [elemName: string]: any;
-//     }
-//     interface ElementChildrenAttribute {
-//       // eslint-disable-next-line @typescript-eslint/ban-types
-//       children: {}; // specify children name to use
-//     }
-//   }
-// }
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace JSX {
+    type Element = MNode;
+    interface ElementAttrs {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      [property: string]: any;
+    }
+    interface IntrinsicElements {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      [elemName: string]: any;
+    }
+    interface ElementChildrenAttribute {
+      // eslint-disable-next-line @typescript-eslint/ban-types
+      children: {}; // specify children name to use
+    }
+  }
+}
 
 interface Props {
   children?: MNode[];
@@ -287,7 +287,7 @@ function commitWork(
   let localOffset = offset;
   let insideFragment = false;
 
-  console.log('Commit:', localOffset, offset);
+  //console.log('Commit:', localOffset, offset);
 
   // For the fiber that was passed (and it could be a deletion), get the parent
   // and if the parent doesn't have a dom, then get the grandparent, and
@@ -303,7 +303,11 @@ function commitWork(
       }
     }
 
-    console.log('InsideFrag:', insideFragment);
+    //console.log('InsideFrag:', insideFragment);
+
+    if (localOffset !== 100) {
+      console.log('HERE', fiber.effectTag, fiber);
+    }
 
     // Once a parent is found with a dom, check the fiber tag to see what
     // operation needs to be handled on it.
@@ -328,44 +332,58 @@ function commitWork(
           //   }
           // }
 
-          if (insideFragment) console.log('IN a fragment!', localOffset);
+          //if (insideFragment) console.log('IN a fragment!', localOffset);
 
-          const totalIndex =
-            localOffset > 0 ? localOffset + fiber.index : fiber.index;
+          // const totalIndex =
+          //   localOffset > 0 ? localOffset + fiber.index : fiber.index;
 
-          if (domParent.childNodes.length > totalIndex) {
-            console.log(
-              'Before:',
-              fiber.dom,
-              'Length:',
-              domParent.childNodes.length,
-              'Index:',
-              fiber.index,
-              'Offset:',
-              localOffset,
-              'Totalindex:',
-              totalIndex,
-            );
-            domParent.insertBefore(
-              fiber.dom,
-              domParent.childNodes[fiber.index + localOffset],
-            );
-          } else {
-            console.log(
-              'PLACEMENT:',
-              fiber.dom,
-              fiber.index,
-              localOffset,
-              domParent.childNodes.length,
-            );
-            // console.log('PLACEMENT:', fiber);
-            domParent.appendChild(fiber.dom);
-            // if (insideFragment) {
-            //   localOffset += fiber.index;
-            // }
-          }
+          // if (domParent.childNodes.length > totalIndex) {
+          //   // console.log(
+          //   //   'Before:',
+          //   //   fiber.dom,
+          //   //   'Length:',
+          //   //   domParent.childNodes.length,
+          //   //   'Index:',
+          //   //   fiber.index,
+          //   //   'Offset:',
+          //   //   localOffset,
+          //   //   'Totalindex:',
+          //   //   totalIndex,
+          //   // );
+          //   domParent.insertBefore(
+          //     fiber.dom,
+          //     domParent.childNodes[fiber.index + localOffset],
+          //   );
+          // } else {
+          // console.log(
+          //   'PLACEMENT:',
+          //   fiber.dom,
+          //   fiber.index,
+          //   localOffset,
+          //   domParent.childNodes.length,
+          // );
+          // console.log('PLACEMENT:', fiber);
+          domParent.appendChild(fiber.dom);
+          // if (insideFragment) {
+          //   localOffset += fiber.index;
+          // }
+          //}
         } else {
           console.log('MISSING PARENT!');
+        }
+      } else if (fiber.effectTag === 'REPLACE' && fiber.dom) {
+        // TODO: I added this check.
+        if (fiber.alternate && fiber.alternate.dom) {
+          // console.log('UPDATE HERE:', fiber);
+          // console.log('UPDATE OLD:', fiber.alternate.props);
+          // console.log('UPDATE NEW:', fiber.props);
+
+          updateDom(fiber.dom, fiber.alternate.props, fiber.props);
+          //console.log('REPLACING:', fiber.type, fiber.alternate.type);
+          domParent.replaceChild(fiber.dom, fiber.alternate.dom);
+          localOffset = 100;
+        } else {
+          console.log('MISSING ALTERNATVE!');
         }
       } else if (fiber.effectTag === 'UPDATE' && fiber.dom) {
         // TODO: I added this check.
@@ -671,7 +689,7 @@ function reconcileChildren(
         oldFiber && element && String(element.type) == String(oldFiber.type);
 
       //console.log('Old fiber:', oldFiber);
-      console.log('New fiber:', element, index + startIndex);
+      //console.log('New fiber:', element, index + startIndex);
 
       // If the fiber already exists, then just update it.
       if (oldFiber && sameType) {
@@ -685,10 +703,9 @@ function reconcileChildren(
           effectTag: 'UPDATE',
           isFragment: false,
         };
-      }
-
-      // If the fiber doesn't exist yet, set it to create.
-      if (element && !sameType) {
+        console.log('Fiber UPDATE:', oldFiber, newFiber);
+      } else if (element && !oldFiber && !sameType) {
+        // If the fiber doesn't exist yet, set it to create.
         newFiber = {
           type: element.type,
           props: element.props,
@@ -699,14 +716,28 @@ function reconcileChildren(
           effectTag: 'PLACEMENT',
           isFragment: false,
         };
-      }
-
-      // If the fiber already exists and is a different type, delete it.
-      if (oldFiber && !sameType) {
+        console.log('Fiber PLACEMENT:', oldFiber, newFiber);
+      } else if (oldFiber && !element) {
+        // If the fiber already exists and is a different type, delete it.
+        console.log('Fiber DELETION:', oldFiber, newFiber);
         //console.log('DELETION OLD:', oldFiber.type);
         //console.log('DELETION NEW:', element.type);
         oldFiber.effectTag = 'DELETION';
         deletions.push(oldFiber);
+      } else if (element && !sameType) {
+        newFiber = {
+          type: element.type,
+          props: element.props,
+          dom: undefined,
+          parent: curFiber,
+          alternate: oldFiber,
+          index: index + startIndex,
+          effectTag: 'REPLACE',
+          isFragment: false,
+        };
+        console.log('Fiber REPLACE:', oldFiber, newFiber);
+      } else {
+        console.log('SKIP:', element);
       }
 
       if (oldFiber) {
