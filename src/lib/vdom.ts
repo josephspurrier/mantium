@@ -126,6 +126,7 @@ const changed = function (
     } else if (node1.tag !== node2.tag) {
       return true;
     } else if (!shallowEqual(node1.attrs, node2.attrs)) {
+      // FIXME: I don't think this should be here. If the attributes are different, then that's fine, it shouldn't do a replace.
       return true;
     }
   }

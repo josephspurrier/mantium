@@ -259,10 +259,10 @@ function commitRoot(deletes: Fiber[], wip: Fiber) {
     // FIXME: Checking for dom is not correct because it could be a function
     // and they don't have a DOM.
     if (fiber.dom) {
-      commitWork(fiber, false, 0);
+      commitWork(fiber, false);
     } else {
       //console.log('Found fragment on delete', fiber);
-      commitWork(fiber, false, 0);
+      commitWork(fiber, false);
     }
   });
 
@@ -271,26 +271,18 @@ function commitRoot(deletes: Fiber[], wip: Fiber) {
   }
 
   if (wip) {
-    commitWork(wip.child, false, 0);
+    commitWork(wip.child, false);
   }
   currentRoot = wip;
   wipRoot = undefined;
 }
 
-function commitWork(
-  fiber: Fiber | undefined,
-  sibling: boolean,
-  offset: number,
-): number {
+function commitWork(fiber: Fiber | undefined, sibling: boolean) {
   if (!fiber) {
-    return 0;
+    return;
   }
 
   let domParentFiber = fiber.parent;
-
-  let localOffset = offset;
-
-  //console.log('Commit:', localOffset, offset);
 
   // For the fiber that was passed (and it could be a deletion), get the parent
   // and if the parent doesn't have a dom, then get the grandparent, and
@@ -300,173 +292,64 @@ function commitWork(
       domParentFiber = domParentFiber.parent;
     }
 
-    //console.log('InsideFrag:', insideFragment);
-
-    if (localOffset !== 100) {
-      console.log('HERE', fiber.effectTag, fiber);
-    }
-
     // Once a parent is found with a dom, check the fiber tag to see what
     // operation needs to be handled on it.
     const domParent = domParentFiber && domParentFiber.dom;
     if (domParent) {
       if (fiber.effectTag === 'PLACEMENT' && fiber.dom) {
-        // TODO: I added this check.
         if (domParent) {
-          // if (fiber.sibling) {
-          //   console.log('place next:', fiber.sibling);
-
-          //   if (fiber.sibling.dom === domParent.firstChild) {
-          //     console.log('BOOP!');
-          //   } else if (fiber.sibling.dom === domParent.lastChild) {
-          //     console.log('BOOP2!');
-          //   } else {
-          //     console.log(
-          //       'yep',
-          //       fiber.sibling.dom,
-          //       domParent.childNodes.length,
-          //     );
-          //   }
-          // }
-
-          //if (insideFragment) console.log('IN a fragment!', localOffset);
-
-          // const totalIndex =
-          //   localOffset > 0 ? localOffset + fiber.index : fiber.index;
-
-          // if (domParent.childNodes.length > totalIndex) {
-          //   // console.log(
-          //   //   'Before:',
-          //   //   fiber.dom,
-          //   //   'Length:',
-          //   //   domParent.childNodes.length,
-          //   //   'Index:',
-          //   //   fiber.index,
-          //   //   'Offset:',
-          //   //   localOffset,
-          //   //   'Totalindex:',
-          //   //   totalIndex,
-          //   // );
-          //   domParent.insertBefore(
-          //     fiber.dom,
-          //     domParent.childNodes[fiber.index + localOffset],
-          //   );
-          // } else {
-          // console.log(
-          //   'PLACEMENT:',
-          //   fiber.dom,
-          //   fiber.index,
-          //   localOffset,
-          //   domParent.childNodes.length,
-          // );
-          // console.log('PLACEMENT:', fiber);
           domParent.appendChild(fiber.dom);
-          // if (insideFragment) {
-          //   localOffset += fiber.index;
-          // }
-          //}
         } else {
           console.log('MISSING PARENT!');
         }
+        commitWork(fiber.child, false);
+        commitWork(fiber.sibling, false);
       } else if (fiber.effectTag === 'REPLACE' && fiber.dom) {
-        // TODO: I added this check.
         if (
           fiber.alternate &&
           fiber.alternate.dom &&
           inNodeList(domParent.childNodes, fiber.alternate.dom)
         ) {
-          // console.log('UPDATE HERE:', fiber);
-          // console.log('UPDATE OLD:', fiber.alternate.props);
-          // console.log('UPDATE NEW:', fiber.props);
-
           console.log('REPLACING1:', fiber, fiber.alternate);
           updateDom(fiber.dom, fiber.alternate.props, fiber.props);
           console.log('REPLACING2:', fiber, fiber.alternate);
-          //if (domParent.contains(fiber.alternate.dom)) {
+          commitWork(fiber.child, false);
           domParent.replaceChild(fiber.dom, fiber.alternate.dom);
-          //} else {
-          //console.log('SKIP:', fiber);
-          //throw new Error('Stopped');
-          //domParent.appendChild(fiber.dom);
-          //}
-          //localOffset = 100;
+          commitWork(fiber.sibling, false);
         } else {
           if (fiber.dom) {
             console.log('NON STANDARD REPLACE:', fiber);
-            // if (
-            //   fiber.alternate &&
-            //   fiber.alternate.dom &&
-            //   fiber.alternate.parent &&
-            //   fiber.alternate.parent.dom
-            // ) {
-            //   fiber.alternate.parent.dom.removeChild(fiber.alternate.dom);
-            // }
             domParent.appendChild(fiber.dom);
           } else {
             console.log('MISSING REPLACE DOM');
           }
-          //console.log('MISSING ALTERNATVE!');
+          commitWork(fiber.child, false);
+          commitWork(fiber.sibling, false);
         }
       } else if (fiber.effectTag === 'UPDATE' && fiber.dom) {
-        // TODO: I added this check.
         if (fiber.alternate) {
-          // console.log('UPDATE HERE:', fiber);
-          // console.log('UPDATE OLD:', fiber.alternate.props);
-          // console.log('UPDATE NEW:', fiber.props);
           updateDom(fiber.dom, fiber.alternate.props, fiber.props);
         } else {
           console.log('MISSING ALTERNATVE!');
         }
-        //if (!inNodeList(domParent.childNodes, fiber.dom)) {
-        //console.log('Not in node list', fiber.dom, domParent.childNodes);
-        //domParent.appendChild(fiber.dom);
-        //} else {
-        //console.log('In node list!');
-        //}
-        // if (domParent.lastChild !== fiber.dom) {
-        //   console.log(
-        //     'WRONG:',
-        //     domParent.firstChild,
-        //     domParent.lastChild,
-        //     fiber.dom,
-        //   );
-        //   domParent.appendChild(fiber.dom);
-        // } else {
-        //   console.log('Already correct:', domParent.lastChild, fiber.dom);
-        // }
-        //console.log('Location:', domParent.lastChild !== fiber.dom);
-        //domParent.appendChild(fiber.dom);
-        //domParent.replaceChild(fiber.dom, fiber.dom);
-
-        // console.log('update previous:', fiber.dom.previousSibling);
-        // console.log('update next:', fiber.dom.nextSibling);
+        commitWork(fiber.child, false);
+        commitWork(fiber.sibling, false);
       } else if (fiber.effectTag === 'DELETION') {
-        // TODO: I added this check.
         if (domParent) {
           commitDeletion(fiber, domParent, sibling);
         } else {
           console.log('MISSING DOMPARENT!');
         }
-        return 0;
-      }
-      const childOffset = commitWork(fiber.child, false, offset);
-      //if (insideFragment) {
-      localOffset += childOffset;
-      //}
-      if (localOffset > 0) {
-        //console.log('Returned', localOffset, insideFragment);
-      }
-      const siblingOffset = commitWork(fiber.sibling, false, localOffset);
-      //if (insideFragment) {
-      localOffset += siblingOffset;
-      //}
-      if (localOffset > 0) {
-        //console.log('Returned finished', localOffset, insideFragment);
+        return;
+      } else {
+        console.log('NOTHING!', fiber);
+        commitWork(fiber.child, false);
+        commitWork(fiber.sibling, false);
       }
     }
   }
 
-  return localOffset > 0 ? localOffset : 0;
+  return;
 }
 
 function inNodeList(arr: NodeListOf<ChildNode>, node: Node): boolean {
@@ -646,7 +529,7 @@ function updateHostComponent(fiber: Fiber) {
 
   // TODO: I added this because if children are null, then nothing will happen.
   if (fiber.props.children) {
-    reconcileChildren(fiber, fiber.props.children, 0);
+    reconcileChildren(fiber, fiber.props.children);
   }
 }
 
