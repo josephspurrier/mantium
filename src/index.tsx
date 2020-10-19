@@ -57,7 +57,6 @@ document.body.appendChild(root);
 //   );
 // }
 
-// m.config.setVerbose(true);
 // m.rendered(() => {
 //   m.rendered(() => {
 //     console.log(root.outerHTML);
@@ -79,6 +78,8 @@ document.body.appendChild(root);
 //svelteRun(root);
 
 //m.render(root, TriangleDemo);
+
+m.config.setVerbose(true);
 
 export const ContextChild1 = (): JSX.Element => {
   //const [value, setValue] = useContext(UserContext);

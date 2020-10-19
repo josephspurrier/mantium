@@ -80,6 +80,7 @@ export interface Fiber {
   // We also add the alternate property to every fiber. This property is a
   // link to the old fiber, the fiber that we committed to the DOM in the previous commit phase.
   alternate?: Fiber;
+  index: number;
   parent?: Fiber;
   sibling?: Fiber;
   child?: Fiber;
@@ -299,7 +300,17 @@ function commitWork(fiber: Fiber | undefined, sibling: boolean) {
       if (fiber.effectTag === 'PLACEMENT' && fiber.dom) {
         if (domParent) {
           //console.log('PLACER:', domParent, typeof domParent, fiber);
-          domParent.appendChild(fiber.dom);
+
+          if (fiber.index > -1 && domParent.childNodes.length > 0) {
+            domParent.insertBefore(
+              fiber.dom,
+              domParent.childNodes[fiber.index],
+            );
+          } else {
+            domParent.appendChild(fiber.dom);
+          }
+
+          //domParent.insertBefore();
         } else {
           console.log('MISSING PARENT!');
         }
@@ -418,6 +429,7 @@ function render(
         children: [element],
       },
       alternate: currentRoot,
+      index: -1,
     };
     deletions = [];
     nextUnitOfWork = wipRoot;
@@ -430,6 +442,7 @@ function render(
         children: [element],
       },
       alternate: currentRoot,
+      index: -1,
     };
     deletions = [];
     nextUnitOfWork = wipRoot;
@@ -572,6 +585,7 @@ function reconcileChildren(
           dom: undefined,
           parent: curFiber,
           alternate: undefined,
+          index: index,
           effectTag: 'PLACEMENT',
         };
         //console.log('Fiber PLACEMENT:', oldFiber, newFiber);
@@ -582,6 +596,7 @@ function reconcileChildren(
           dom: oldFiber.dom,
           parent: curFiber,
           alternate: oldFiber,
+          index: index,
           effectTag: 'UPDATE',
         };
         //console.log('Fiber UPDATE:', oldFiber, newFiber);
@@ -686,6 +701,7 @@ function redraw(origin = ''): void {
       dom: currentRoot.dom,
       props: currentRoot.props,
       alternate: currentRoot,
+      index: -1,
     };
   }
   if (verbose) console.log('Redraw WipRoot:', wipRoot);
