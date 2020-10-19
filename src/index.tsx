@@ -37,114 +37,45 @@ const root = document.body;
 // // // //m.route(root, '/jsonrequest', JSONRequest);
 // m.route(root, '/404', ErrorPage);
 
-const MainPage = (): JSX.Element => {
-  return (
-    <div>
-      <div>
-        <a title='page1' href='#/app'>
-          Go to UI Testing Page
-        </a>
-      </div>
-      <div>
-        <a title='page2' href='#/page2'>
-          Go to Page 2
-        </a>
-      </div>
-      <div>
-        <a title='effect' href='#/effect'>
-          Go to Effect Page
-        </a>
-      </div>
-      <div>
-        <a title='context' href='#/context'>
-          Go to Context Page
-        </a>
-      </div>
-      <div>
-        <a title='context' href='#/context2'>
-          Go to Context 2 Page
-        </a>
-      </div>
-      <div>
-        <a title='hyperscript' href='#/hyperscript'>
-          Go to HyperScript Page
-        </a>
-      </div>
-      <div>
-        <a title='jsonrequest' href='#/jsonrequest'>
-          Go to JSON Request Page
-        </a>
-      </div>
-      <div>
-        <a title='error' href='#/404'>
-          Go to Error Page
-        </a>
-      </div>
-    </div>
-  );
-};
+m.render(
+  <div>
+    <div>element 1</div>
+    <div>element 2</div>
+  </div>,
+  document.body,
+);
 
-export const ContextChild1 = (): JSX.Element => {
-  //const [value, setValue] = useContext(UserContext);
-  const value = 'moose';
+function Child() {
   return (
-    <div>
-      <div>Child 1 value: {value}</div>
-      <button
-        onclick={() => {
-          //setValue('duck');
-        }}
-      >
-        Change 2
-      </button>
-    </div>
+    <>
+      <div>element 4</div>
+    </>
   );
-};
+}
 
-export const ContextChild2 = (): JSX.Element => {
-  //const [value, setValue] = useContext(UserContext);
-  const value = 'moose';
+function Element() {
   return (
-    <div>
-      <div>Child 2 value: {value}</div>
-      <button
-        onclick={() => {
-          //setValue('fish');
-        }}
-      >
-        Change 2
-      </button>
-    </div>
+    <>
+      <span>element 3</span>
+      <Child />
+    </>
   );
-};
-
-export const ContextRoot = (): JSX.Element => {
-  return (
-    <div>
-      <a title='home' href='#/'>
-        Back
-      </a>
-      <p>
-        Context Page 1 should share context with{' '}
-        <a href='#/context2'>Context Page 2</a>.
-      </p>
-
-      <div>
-        <ContextChild1 />
-        <ContextChild2 />
-      </div>
-    </div>
-  );
-};
+}
 
 m.config.setVerbose(true);
 m.rendered(() => {
   m.rendered(() => {
     console.log(root.outerHTML);
   });
-  m.render(<ContextRoot />, root);
+  m.render(<Element />, root);
 });
-m.render(<MainPage />, root);
+m.render(
+  <div>
+    <div>element 1</div>
+    <div>element 2</div>
+  </div>,
+  root,
+);
 
 // setTimeout(() => {
 //   m.render(<ContextRoot />, document.body);
