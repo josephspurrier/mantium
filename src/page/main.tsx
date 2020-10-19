@@ -3,7 +3,7 @@ import { m } from '../lib/v2';
 
 export const MainPage = (): JSX.Element => {
   return (
-    <div>
+    <>
       <div>
         <a title='page1' href='#/app'>
           Go to UI Testing Page
@@ -64,6 +64,6 @@ export const MainPage = (): JSX.Element => {
           Go to Error Page
         </a>
       </div>
-    </div>
+    </>
   );
 };

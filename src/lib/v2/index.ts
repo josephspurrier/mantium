@@ -694,7 +694,7 @@ function redraw(origin = ''): void {
 }
 
 export interface RouteList {
-  [property: string]: () => JSX.Element;
+  [property: string]: JSX.Element;
 }
 
 let rootParent: HTMLElement;
@@ -704,8 +704,8 @@ let routerActive = false;
 function route(
   parent: HTMLElement,
   path: string,
-  template: () => JSX.Element,
-): () => JSX.Element {
+  template: JSX.Element,
+): JSX.Element {
   rootParent = parent;
 
   // Register the router event listeners.
@@ -751,11 +751,11 @@ function router(): void {
   const url = currentURL();
   const routeResolved = resolveRoute(url);
   if (routeResolved) {
-    render(routeResolved(), rootParent);
+    render(routeResolved, rootParent);
   } else {
     const error404 = resolveRoute('/404');
     if (error404) {
-      render(error404(), rootParent);
+      render(error404, rootParent);
       return;
     }
 
