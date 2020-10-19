@@ -1,5 +1,3 @@
-import { readConfigFile } from 'typescript';
-
 // If true, then will output verbose console.log messages.
 let verbose = false;
 
@@ -312,9 +310,10 @@ function commitWork(fiber: Fiber | undefined, sibling: boolean) {
             fiber.alternate.dom &&
             inNodeList(domParent.childNodes, fiber.alternate.dom)
           ) {
-            //console.log('REPLACING1:', fiber, fiber.alternate);
+            console.log('REPLACING1:', fiber, fiber.alternate);
             updateDom(fiber.dom, fiber.alternate.props, fiber.props);
             //console.log('REPLACING2:', fiber, fiber.alternate);
+            // FIXME: I MAY BE REPLACING A CHILD ON A DOM THAT IS NOT ON THE PAGE.
             domParent.replaceChild(fiber.dom, fiber.alternate.dom);
           } else {
             if (fiber.dom) {
@@ -327,7 +326,7 @@ function commitWork(fiber: Fiber | undefined, sibling: boolean) {
                 fiber.alternate.dom
               ) {
                 //console.log('HIT1!');
-                fiber.alternate.parent.dom.removeChild(fiber.alternate.dom);
+                //fiber.alternate.parent.dom.removeChild(fiber.alternate.dom);
               }
               domParent.appendChild(fiber.dom);
             } else {
@@ -341,13 +340,24 @@ function commitWork(fiber: Fiber | undefined, sibling: boolean) {
             fiber.alternate.parent.dom &&
             fiber.alternate.dom
           ) {
-            //console.log('HIT2!');
+            console.log(
+              'HIT2!',
+              fiber.alternate.dom,
+              fiber,
+              fiber.alternate.dom.childNodes.length,
+              (fiber.alternate.dom as HTMLElement).innerHTML,
+            );
             fiber.alternate.parent.dom.removeChild(fiber.alternate.dom);
           }
         }
       } else if (fiber.effectTag === 'UPDATE' && fiber.dom) {
         if (fiber.alternate) {
           updateDom(fiber.dom, fiber.alternate.props, fiber.props);
+
+          //fiber.dom.textContent = 'cool';
+          console.log('UPDATED:', fiber);
+          // FIXME: This appendChild should not be here!!! Maybe the parent was removed earlier? The node should still be in the DOM.
+          //domParent.appendChild(fiber.dom);
         } else {
           console.log('MISSING ALTERNATVE!');
         }
@@ -646,6 +656,7 @@ function reconcileChildren(
           alternate: oldFiber,
           effectTag: 'REPLACE',
         };
+
         if (verbose) console.log('Fiber REPLACE:', oldFiber, newFiber);
       } else {
         console.log('SKIP 22:', element);
