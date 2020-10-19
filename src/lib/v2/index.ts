@@ -303,61 +303,16 @@ function commitWork(fiber: Fiber | undefined, sibling: boolean) {
         } else {
           console.log('MISSING PARENT!');
         }
-      } else if (fiber.effectTag === 'REPLACE') {
-        if (fiber.dom) {
-          if (
-            fiber.alternate &&
-            fiber.alternate.dom &&
-            inNodeList(domParent.childNodes, fiber.alternate.dom)
-          ) {
-            console.log('REPLACING1:', fiber, fiber.alternate);
-            updateDom(fiber.dom, fiber.alternate.props, fiber.props);
-            //console.log('REPLACING2:', fiber, fiber.alternate);
-            // FIXME: I MAY BE REPLACING A CHILD ON A DOM THAT IS NOT ON THE PAGE.
-            domParent.replaceChild(fiber.dom, fiber.alternate.dom);
-          } else {
-            if (fiber.dom) {
-              if (verbose) console.log('NON STANDARD REPLACE:', fiber);
-              // TODO: Do we need to do cleanup on the old node at this point?
-              if (
-                fiber.alternate &&
-                fiber.alternate.parent &&
-                fiber.alternate.parent.dom &&
-                fiber.alternate.dom
-              ) {
-                //console.log('HIT1!');
-                //fiber.alternate.parent.dom.removeChild(fiber.alternate.dom);
-              }
-              domParent.appendChild(fiber.dom);
-            } else {
-              console.log('MISSING REPLACE DOM');
-            }
-          }
-        } else {
-          if (
-            fiber.alternate &&
-            fiber.alternate.parent &&
-            fiber.alternate.parent.dom &&
-            fiber.alternate.dom
-          ) {
-            console.log(
-              'HIT2!',
-              fiber.alternate.dom,
-              fiber,
-              fiber.alternate.dom.childNodes.length,
-              (fiber.alternate.dom as HTMLElement).innerHTML,
-            );
-            fiber.alternate.parent.dom.removeChild(fiber.alternate.dom);
-          }
-        }
       } else if (fiber.effectTag === 'UPDATE' && fiber.dom) {
         if (fiber.alternate) {
           updateDom(fiber.dom, fiber.alternate.props, fiber.props);
 
           //fiber.dom.textContent = 'cool';
-          console.log('UPDATED:', fiber);
+          //console.log('UPDATED:', fiber);
           // FIXME: This appendChild should not be here!!! Maybe the parent was removed earlier? The node should still be in the DOM.
+          // if (domParent.childNodes.length > 1) {
           //domParent.appendChild(fiber.dom);
+          // }
         } else {
           console.log('MISSING ALTERNATVE!');
         }
@@ -379,16 +334,16 @@ function commitWork(fiber: Fiber | undefined, sibling: boolean) {
   return;
 }
 
-function inNodeList(arr: NodeListOf<ChildNode>, node: Node): boolean {
-  let v = false;
-  arr.forEach((item) => {
-    //console.log('test:', item, node, item.isEqualNode(node));
-    if (item.isSameNode(node)) {
-      v = true;
-    }
-  });
-  return v;
-}
+// function inNodeList(arr: NodeListOf<ChildNode>, node: Node): boolean {
+//   let v = false;
+//   arr.forEach((item) => {
+//     //console.log('test:', item, node, item.isEqualNode(node));
+//     if (item.isSameNode(node)) {
+//       v = true;
+//     }
+//   });
+//   return v;
+// }
 
 function commitDeletion(
   fiber: Fiber,
@@ -609,7 +564,7 @@ function reconcileChildren(
       //console.log('New fiber:', element, index + startIndex);
 
       // If the fiber already exists, then just update it.
-      if (element && !oldFiber && !sameType) {
+      if (element && !sameType) {
         // If the fiber doesn't exist yet, set it to create.
         newFiber = {
           type: element.type,
@@ -630,36 +585,15 @@ function reconcileChildren(
           effectTag: 'UPDATE',
         };
         //console.log('Fiber UPDATE:', oldFiber, newFiber);
-      } else if (oldFiber && !element) {
+      }
+
+      if (oldFiber && !sameType) {
         // If the fiber already exists and is a different type, delete it.
         //console.log('Fiber DELETION:', oldFiber, newFiber);
         //console.log('DELETION OLD:', oldFiber.type);
         //console.log('DELETION NEW:', element.type);
         oldFiber.effectTag = 'DELETION';
         deletions.push(oldFiber);
-        // newFiber = {
-        //   type: oldFiber.type,
-        //   props: oldFiber.props,
-        //   dom: oldFiber.dom,
-        //   parent: curFiber,
-        //   alternate: oldFiber,
-        //   index: index + startIndex,
-        //   effectTag: 'DELETION',
-        //   isFragment: false,
-        // };
-      } else if (element && !sameType) {
-        newFiber = {
-          type: element.type,
-          props: element.props,
-          dom: undefined,
-          parent: curFiber,
-          alternate: oldFiber,
-          effectTag: 'REPLACE',
-        };
-
-        if (verbose) console.log('Fiber REPLACE:', oldFiber, newFiber);
-      } else {
-        console.log('SKIP 22:', element);
       }
 
       if (oldFiber) {

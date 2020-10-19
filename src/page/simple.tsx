@@ -28,7 +28,7 @@ export const Simple2 = (): JSX.Element => {
         <a href='#/simple1'>Simple Page 1</a>.
       </p>
 
-      <span></span>
+      <div></div>
     </div>
   );
 };
