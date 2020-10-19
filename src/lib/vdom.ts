@@ -4,7 +4,6 @@ import { resetStateCounter } from './helper';
 import { updateAttrs } from './attrs';
 import { state } from './state';
 import { processEffects } from './useeffect';
-import { shallowEqual } from './helper';
 
 // Redraw, but watch out for loops.
 export const redraw = (origin = ''): void => {
@@ -124,9 +123,6 @@ const changed = function (
     if (node1.attrs && node1.attrs.forceUpdate) {
       return true;
     } else if (node1.tag !== node2.tag) {
-      return true;
-    } else if (!shallowEqual(node1.attrs, node2.attrs)) {
-      // FIXME: I don't think this should be here. If the attributes are different, then that's fine, it shouldn't do a replace.
       return true;
     }
   }
