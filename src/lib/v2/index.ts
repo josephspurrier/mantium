@@ -77,10 +77,8 @@ export interface Fiber {
   type?: string | ((props: Props) => MNode);
   dom?: HTMLElement | DocumentFragment | Text;
   props: Props;
-  isFragment: boolean;
   // We also add the alternate property to every fiber. This property is a
   // link to the old fiber, the fiber that we committed to the DOM in the previous commit phase.
-  index: number;
   alternate?: Fiber;
   parent?: Fiber;
   sibling?: Fiber;
@@ -291,7 +289,6 @@ function commitWork(
   let domParentFiber = fiber.parent;
 
   let localOffset = offset;
-  let insideFragment = false;
 
   //console.log('Commit:', localOffset, offset);
 
@@ -299,14 +296,8 @@ function commitWork(
   // and if the parent doesn't have a dom, then get the grandparent, and
   // continue upwards until a dom is found.
   if (domParentFiber) {
-    if (domParentFiber.isFragment) {
-      insideFragment = true;
-    }
     while (domParentFiber && !domParentFiber.dom) {
       domParentFiber = domParentFiber.parent;
-      if (domParentFiber && domParentFiber.isFragment) {
-        insideFragment = true;
-      }
     }
 
     //console.log('InsideFrag:', insideFragment);
@@ -475,10 +466,6 @@ function commitWork(
     }
   }
 
-  if (insideFragment) {
-    console.log('YES!!', localOffset);
-  }
-
   return localOffset > 0 ? localOffset : 0;
 }
 
@@ -566,8 +553,6 @@ function render(
         children: [element],
       },
       alternate: currentRoot,
-      index: 0,
-      isFragment: false,
     };
     deletions = [];
     nextUnitOfWork = wipRoot;
@@ -580,8 +565,6 @@ function render(
         children: [element],
       },
       alternate: currentRoot,
-      index: 0,
-      isFragment: false,
     };
     deletions = [];
     nextUnitOfWork = wipRoot;
@@ -653,7 +636,7 @@ function updateFunctionComponent(fiber: Fiber) {
   hookIndex = 0;
   wipFiber.hooks = [];
   const children = [fun(fiber.props)] as MNode[];
-  reconcileChildren(fiber, children, fiber.index);
+  reconcileChildren(fiber, children);
 }
 
 function updateHostComponent(fiber: Fiber) {
@@ -670,7 +653,6 @@ function updateHostComponent(fiber: Fiber) {
 function reconcileChildren(
   curFiber: Fiber,
   elements: MNode[],
-  startIndex: number,
 ): [Fiber | undefined, Fiber | undefined, number] {
   let index = 0;
   let oldFiber = curFiber.alternate && curFiber.alternate.child;
@@ -692,22 +674,15 @@ function reconcileChildren(
     if (element && element.type === 'FRAGMENT') {
       if (verbose) console.log('FRAGMENT!');
       if (element.props.children) {
-        const [firstSib, lastSibling, countAdded] = reconcileChildren(
+        const [firstSib, lastSibling] = reconcileChildren(
           curFiber,
           element.props.children,
-          index + startIndex,
         );
 
-        curFiber.isFragment = true;
-
-        if (index + startIndex === 0) {
+        if (index === 0) {
           curFiber.child = firstSib;
         }
         prevSibling = lastSibling;
-
-        console.log('Out:', startIndex, countAdded);
-        startIndex += countAdded;
-        console.log('Final:', startIndex);
 
         // TODO: Not sure if this needs to be here on an update?
         // if (oldFiber) {
@@ -730,9 +705,7 @@ function reconcileChildren(
           dom: oldFiber.dom,
           parent: curFiber,
           alternate: oldFiber,
-          index: index + startIndex,
           effectTag: 'UPDATE',
-          isFragment: false,
         };
         console.log('Fiber UPDATE:', oldFiber, newFiber);
       } else if (element && !oldFiber && !sameType) {
@@ -743,9 +716,7 @@ function reconcileChildren(
           dom: undefined,
           parent: curFiber,
           alternate: undefined,
-          index: index + startIndex,
           effectTag: 'PLACEMENT',
-          isFragment: false,
         };
         console.log('Fiber PLACEMENT:', oldFiber, newFiber);
       } else if (oldFiber && !element) {
@@ -772,9 +743,7 @@ function reconcileChildren(
           dom: undefined,
           parent: curFiber,
           alternate: oldFiber,
-          index: index + startIndex,
           effectTag: 'REPLACE',
-          isFragment: false,
         };
         console.log('Fiber REPLACE:', oldFiber, newFiber);
       } else {
@@ -871,8 +840,6 @@ function redraw(origin = ''): void {
       dom: currentRoot.dom,
       props: currentRoot.props,
       alternate: currentRoot,
-      index: 0,
-      isFragment: false,
     };
   }
   if (verbose) console.log('Redraw WipRoot:', wipRoot);
