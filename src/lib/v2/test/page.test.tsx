@@ -102,11 +102,11 @@ export const ContextRoot = (): JSX.Element => {
   );
 };
 
-test('render with div and then rerender with fragment with different elements', (done) => {
-  m.render(MainPage(), document.body);
+test('render with div and then rerender with different elements', (done) => {
+  m.render(<MainPage />, document.body);
 
   m.rendered(() => {
-    m.render(ContextRoot(), document.body);
+    m.render(<ContextRoot />, document.body);
 
     renderDone(done, () => {
       expect(document.body.outerHTML).toBe(
