@@ -125,6 +125,8 @@ function commitWork(fiber: Fiber | undefined, sibling = false) {
     }
 
     updateDom(fiber.dom, fiber.alternate.props, fiber.props);
+    // This doesn't work because there are a lot of arrays where there are
+    // elements at the end that are updated so they just keep getting appended.
     // if (domParent.lastChild && !domParent.lastChild.isSameNode(fiber.dom)) {
     //   // console.log(
     //   //   'Not last:',
@@ -133,6 +135,9 @@ function commitWork(fiber: Fiber | undefined, sibling = false) {
     //   // );
     // }
 
+    // FIXME: This will redraw everything, but when you remove it, elements
+    // get out of order because the PLACEMENT above will add a child to the end
+    // while and UPDATE will not change the location of the element.
     domParent.appendChild(fiber.dom);
   } else if (fiber.effectTag === 'DELETION') {
     commitDeletion(fiber, domParent, sibling);
