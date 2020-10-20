@@ -118,6 +118,30 @@ function commitWork(fiber: Fiber | undefined, sibling = false) {
 
   if (fiber.effectTag === 'PLACEMENT' && fiber.dom) {
     domParent.appendChild(fiber.dom);
+  } else if (
+    fiber.effectTag === 'REPLACE' &&
+    fiber.dom &&
+    fiber.alternate &&
+    fiber.alternate.dom
+  ) {
+    //domParent.appendChild(fiber.dom);
+    console.log(
+      'replace:',
+      fiber.dom,
+      fiber.alternate.dom,
+      fiber.alternate.dom.isConnected,
+    );
+    if (
+      fiber.alternate.dom.isConnected &&
+      domParent.contains(fiber.alternate.dom)
+    ) {
+      domParent.replaceChild(fiber.dom, fiber.alternate.dom);
+    } else {
+      domParent.appendChild(fiber.dom);
+      if (fiber.alternate.parent && fiber.alternate.parent.dom) {
+        fiber.alternate.parent.dom.removeChild(fiber.alternate.dom);
+      }
+    }
   } else if (fiber.effectTag === 'UPDATE' && fiber.dom) {
     if (!fiber.alternate) {
       console.log('MISSING ALTERNATVE!');

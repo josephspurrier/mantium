@@ -66,17 +66,31 @@ function reconcileChildren(
 
       // If the fiber already exists, then just update it.
       if (element && !sameType) {
-        // If the fiber doesn't exist yet, set it to create.
-        newFiber = {
-          type: element.type,
-          body: element.tag,
-          props: element.props,
-          dom: undefined,
-          parent: curFiber,
-          alternate: undefined,
-          //index: index,
-          effectTag: 'PLACEMENT',
-        };
+        if (!oldFiber) {
+          // If the fiber doesn't exist yet, set it to create.
+          newFiber = {
+            type: element.type,
+            body: element.tag,
+            props: element.props,
+            dom: undefined,
+            parent: curFiber,
+            alternate: undefined,
+            //index: index,
+            effectTag: 'PLACEMENT',
+          };
+        } else {
+          // If the fiber does exist, do a replace.
+          newFiber = {
+            type: element.type,
+            body: element.tag,
+            props: element.props,
+            dom: undefined,
+            parent: curFiber,
+            alternate: oldFiber,
+            //index: index,
+            effectTag: 'REPLACE',
+          };
+        }
 
         // }
         // if (curFiber.index > -1 && typeof curFiber.body !== 'string') {
@@ -105,7 +119,7 @@ function reconcileChildren(
         //console.log('Fiber UPDATE:', oldFiber, newFiber);
       }
 
-      if (oldFiber && !sameType) {
+      if (oldFiber && !sameType && !element) {
         // If the fiber already exists and is a different type, delete it.
         //console.log('Fiber DELETION:', oldFiber, newFiber);
         //console.log('DELETION OLD:', oldFiber.body);
