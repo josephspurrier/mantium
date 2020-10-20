@@ -24,7 +24,8 @@ export function render(
     element = rawElement as MNode;
     elementType = NodeType.ELEMENT;
   } else {
-    element = createElement(NodeType.FRAGMENT, {}, String(rawElement));
+    // Create a fragment.
+    element = createElement('', {}, String(rawElement));
     elementType = NodeType.FRAGMENT;
   }
 

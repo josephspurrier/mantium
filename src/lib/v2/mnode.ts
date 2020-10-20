@@ -2,7 +2,7 @@ import { updateDom } from './attrs';
 import { Fiber, MNode, NodeType, Props } from './type';
 
 export function createElement(
-  body: string | NodeType,
+  body: string | ((props: Props) => MNode),
   props = {} as Props,
   ...children: (MNode | string)[]
 ): MNode {
@@ -31,20 +31,8 @@ export function createElement(
     return r;
   };
 
-  console.log('Info:', body);
-
-  if (typeof body === 'string') {
-    return {
-      type: NodeType.ELEMENT,
-      tag: body,
-      props: {
-        ...props,
-        children: getChildren(children),
-      },
-    };
-  }
   return {
-    type: NodeType.FRAGMENT,
+    type: body ? NodeType.ELEMENT : NodeType.FRAGMENT,
     tag: body,
     props: {
       ...props,
