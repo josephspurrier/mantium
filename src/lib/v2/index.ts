@@ -63,18 +63,36 @@ declare global {
   }
 }
 
+export enum NodeType {
+  ELEMENT, // Is a div, p, a, etc.
+  TEXT, // Is a text element.
+  FUNCTION, // Is a callable function.
+  FRAGMENT, // Is a fragment.
+}
+
+//export const ELEMENT = 1;
+//export const FUNCTION = 2;
+//export const TEXT = 2;
+//export const COMMENT = 3;
+//export const FRAGMENT = 4;
+// placeholder nodes
+//export const VVIEW = 5;
+//export const VMODEL = 6;
+
 interface Props {
   children?: MNode[];
   [elemName: string]: unknown;
 }
 
 interface MNode {
-  type: string | ((props: Props) => MNode);
+  type: NodeType;
+  tag: string | ((props: Props) => MNode);
   props: Props;
 }
 
 export interface Fiber {
-  type?: string | ((props: Props) => MNode);
+  type: NodeType;
+  body?: string | ((props: Props) => MNode);
   dom?: HTMLElement | DocumentFragment | Text;
   props: Props;
   // We also add the alternate property to every fiber. This property is a
@@ -105,7 +123,7 @@ let hookIndex = 0;
 requestIdleCallback(workLoop);
 
 function createElement(
-  type: string,
+  body: string | NodeType,
   props = {} as Props,
   ...children: (MNode | string)[]
 ): MNode {
@@ -116,7 +134,7 @@ function createElement(
       if (Array.isArray(element)) {
         r = [...r, ...getChildren(element)];
       } else {
-        if (element && (element as MNode).type) {
+        if (element && (element as MNode).tag) {
           r.push(element as MNode);
         } else {
           if (typeof element === 'object') {
@@ -134,8 +152,19 @@ function createElement(
     return r;
   };
 
+  if (body) {
+    return {
+      type: NodeType.ELEMENT,
+      tag: body as string,
+      props: {
+        ...props,
+        children: getChildren(children),
+      },
+    };
+  }
   return {
-    type: type ? type : 'FRAGMENT',
+    type: NodeType.FRAGMENT,
+    tag: 'UNUSED',
     props: {
       ...props,
       children: getChildren(children),
@@ -145,7 +174,8 @@ function createElement(
 
 function createFragment(props: Props): MNode {
   return {
-    type: 'FRAGMENT',
+    type: NodeType.FRAGMENT,
+    tag: 'UNUSED',
     props: {
       children: props.children,
     },
@@ -154,7 +184,8 @@ function createFragment(props: Props): MNode {
 
 function createTextElement(text: string): MNode {
   return {
-    type: 'TEXT_ELEMENT',
+    type: NodeType.TEXT,
+    tag: 'UNUSED',
     props: {
       nodeValue: text,
       children: [],
@@ -166,18 +197,18 @@ function createDom(fiber: Fiber): HTMLElement | DocumentFragment | Text {
   //TODO: I added this "as string".
   let dom: HTMLElement | Text | DocumentFragment;
   switch (fiber.type) {
-    case 'TEXT_ELEMENT': {
+    case NodeType.TEXT: {
       dom = document.createTextNode('');
       break;
     }
     // case undefined: {
     //   console.log('YOU SHOULD NEVER SEE THIS.', fiber);
     //   //dom = document.createDocumentFragment();
-    //   //dom = document.createElement(fiber.type as string);
+    //   //dom = document.createElement(fiber.body as string);
     //   break;
     // }
     default: {
-      dom = document.createElement(fiber.type as string);
+      dom = document.createElement(fiber.body as string);
       break;
     }
   }
@@ -301,14 +332,19 @@ function commitWork(fiber: Fiber | undefined, sibling: boolean) {
         if (domParent) {
           //console.log('PLACER:', domParent, typeof domParent, fiber);
 
-          if (fiber.index > -1 && domParent.childNodes.length > 0) {
-            domParent.insertBefore(
-              fiber.dom,
-              domParent.childNodes[fiber.index],
-            );
-          } else {
-            domParent.appendChild(fiber.dom);
-          }
+          // if (
+          //   fiber.index > -1 &&
+          //   domParent.childNodes.length > 0 &&
+          //   domParent.childNodes[fiber.index] //FIXME: This will be null and then it will do an appendChild anyway.
+          // ) {
+          //   //console.log('BAD!', domParent.childNodes[fiber.index]);
+          //   domParent.insertBefore(
+          //     fiber.dom,
+          //     domParent.childNodes[fiber.index],
+          //   );
+          // } else {
+          domParent.appendChild(fiber.dom);
+          //}
 
           //domParent.insertBefore();
         } else {
@@ -324,6 +360,17 @@ function commitWork(fiber: Fiber | undefined, sibling: boolean) {
           // if (domParent.childNodes.length > 1) {
           //domParent.appendChild(fiber.dom);
           // }
+          if (
+            domParent.lastChild &&
+            !domParent.lastChild.isSameNode(fiber.dom)
+          ) {
+            // console.log(
+            //   'Not last:',
+            //   (domParent.lastChild as HTMLElement).outerHTML,
+            //   (fiber.dom as HTMLElement).outerHTML,
+            // );
+            domParent.appendChild(fiber.dom);
+          }
         } else {
           console.log('MISSING ALTERNATVE!');
         }
@@ -374,21 +421,21 @@ function commitDeletion(
 }
 
 function renderNow(element: MNode, container: HTMLElement): void {
-  if (element.type === 'TEXT_ELEMENT') {
+  if (element.type === NodeType.TEXT) {
     const dom = document.createTextNode('');
     if (element.props.nodeValue) {
       dom.nodeValue = element.props.nodeValue as string;
     }
     container.appendChild(dom);
-  } else if (element.type === 'FRAGMENT') {
+  } else if (element.type === NodeType.FRAGMENT) {
     if (element.props.children) {
       element.props.children.forEach((child) => renderNow(child, container));
     }
-  } else if (element.type instanceof Function) {
-    const mnode = element.type(element.props);
+  } else if (element.tag instanceof Function) {
+    const mnode = element.tag(element.props);
     renderNow(mnode, container);
   } else {
-    const dom = document.createElement(element.type);
+    const dom = document.createElement(String(element.tag));
 
     const isProperty = (key: string) => key !== 'children';
     Object.keys(element.props)
@@ -414,16 +461,21 @@ function render(
 
   //console.log('Render:', rawElement, container);
 
+  let elementType: NodeType;
+
   let element: MNode;
-  if ((rawElement as MNode).props || (rawElement as MNode).type) {
+  if ((rawElement as MNode).props || (rawElement as MNode).tag) {
     element = rawElement as MNode;
+    elementType = NodeType.ELEMENT;
   } else {
-    element = createElement('FRAGMENT', {}, String(rawElement));
+    element = createElement(NodeType.FRAGMENT, {}, String(rawElement));
+    elementType = NodeType.FRAGMENT;
   }
 
   if (currentRoot) {
     // Redraw.
     wipRoot = {
+      type: elementType,
       dom: currentRoot.dom,
       props: {
         children: [element],
@@ -437,6 +489,7 @@ function render(
     // First draw.
     rootParent = container;
     wipRoot = {
+      type: elementType,
       dom: container,
       props: {
         children: [element],
@@ -487,7 +540,7 @@ function workLoop(deadline: IdleDeadline) {
 
 function performUnitOfWork(fiber: Fiber): Fiber | undefined {
   //console.log('performWork:', fiber);
-  const isFunctionComponent = fiber.type instanceof Function;
+  const isFunctionComponent = fiber.body instanceof Function;
   if (isFunctionComponent) {
     //console.log('funccomponent:', fiber);
     updateFunctionComponent(fiber);
@@ -511,7 +564,7 @@ function performUnitOfWork(fiber: Fiber): Fiber | undefined {
 }
 
 function updateFunctionComponent(fiber: Fiber) {
-  const fun = fiber.type as (props: Props) => MNode;
+  const fun = fiber.body as (props: Props) => MNode;
   wipFiber = fiber;
   hookIndex = 0;
   wipFiber.hooks = [];
@@ -544,13 +597,15 @@ function reconcileChildren(
 
   //console.log('elements:', elements.length);
 
+  //const parentIndex = curFiber.index > 0 ? curFiber.index : 0;
+
   while (index < elements.length || oldFiber !== undefined) {
     const element = elements[index];
     let newFiber: Fiber | undefined;
 
     // Handle fragments.
     //console.log('element:', curFiber, elements, elements.length, index);
-    if (element && element.type === 'FRAGMENT') {
+    if (element && element.type === NodeType.FRAGMENT) {
       if (verbose) console.log('FRAGMENT!');
       if (element.props.children) {
         const [firstSib, lastSibling] = reconcileChildren(
@@ -571,7 +626,7 @@ function reconcileChildren(
       }
     } else {
       const sameType =
-        oldFiber && element && String(element.type) == String(oldFiber.type);
+        oldFiber && element && String(element.tag) == String(oldFiber.body);
 
       //console.log('Old fiber:', oldFiber);
       //console.log('New fiber:', element, index + startIndex);
@@ -581,6 +636,7 @@ function reconcileChildren(
         // If the fiber doesn't exist yet, set it to create.
         newFiber = {
           type: element.type,
+          body: element.tag,
           props: element.props,
           dom: undefined,
           parent: curFiber,
@@ -588,25 +644,42 @@ function reconcileChildren(
           index: index,
           effectTag: 'PLACEMENT',
         };
+
+        // if (oldFiber) {
+        //   newFiber.index = oldFiber.index;
+
+        // }
+        if (curFiber.index > -1 && typeof curFiber.body !== 'string') {
+          //console.log('Parent Index:', curFiber.index);
+          newFiber.index = curFiber.index + index;
+        }
+
         //console.log('Fiber PLACEMENT:', oldFiber, newFiber);
       } else if (oldFiber && sameType) {
         newFiber = {
-          type: oldFiber.type,
+          type: element.type,
+          body: oldFiber.body,
           props: element.props,
           dom: oldFiber.dom,
           parent: curFiber,
           alternate: oldFiber,
-          index: index,
+          index: index, //FIXME: I don't know if this is index or -1?
           effectTag: 'UPDATE',
         };
+
+        if (curFiber.index > -1 && typeof curFiber.body !== 'string') {
+          //console.log('Parent Index:', curFiber.index);
+          newFiber.index = curFiber.index + index;
+        }
+
         //console.log('Fiber UPDATE:', oldFiber, newFiber);
       }
 
       if (oldFiber && !sameType) {
         // If the fiber already exists and is a different type, delete it.
         //console.log('Fiber DELETION:', oldFiber, newFiber);
-        //console.log('DELETION OLD:', oldFiber.type);
-        //console.log('DELETION NEW:', element.type);
+        //console.log('DELETION OLD:', oldFiber.body);
+        //console.log('DELETION NEW:', element.body);
         oldFiber.effectTag = 'DELETION';
         deletions.push(oldFiber);
       }
@@ -698,6 +771,7 @@ function redraw(origin = ''): void {
   // TODO: I added this on currentRoot.
   if (currentRoot) {
     wipRoot = {
+      type: currentRoot.type,
       dom: currentRoot.dom,
       props: currentRoot.props,
       alternate: currentRoot,

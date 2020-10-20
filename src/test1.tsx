@@ -1,6 +1,5 @@
-import { renderDone } from './helper';
-import { m } from '../index';
-//import { State } from '../../../page/component/state';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { m } from './lib/v2';
 
 export const ContextChild1 = (): JSX.Element => {
   //const [value, setValue] = useContext(UserContext);
@@ -36,7 +35,7 @@ export const ContextChild2 = (): JSX.Element => {
   );
 };
 
-test('render with div and then rerender with different elements', (done) => {
+export function RunTest1(): void {
   m.rendered(() => {
     m.render(
       <>
@@ -55,12 +54,6 @@ test('render with div and then rerender with different elements', (done) => {
       </>,
       document.body,
     );
-
-    renderDone(done, () => {
-      expect(document.body.outerHTML).toBe(
-        '<body><a title="home" href="#/">Back</a><p>Context Page 1 should share context with <a href="#/context2">Context Page 2</a>.</p><div><div>Child 1 value: moose</div><button>Change 2</button><div>Child 2 value: moose</div><button>Change 2</button></div></body>',
-      );
-    });
   });
   m.render(
     <>
@@ -107,4 +100,4 @@ test('render with div and then rerender with different elements', (done) => {
     </>,
     document.body,
   );
-});
+}
