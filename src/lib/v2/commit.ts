@@ -171,7 +171,7 @@ function commitWork(fiber: Fiber | undefined, sibling: boolean) {
             //   (domParent.lastChild as HTMLElement).outerHTML,
             //   (fiber.dom as HTMLElement).outerHTML,
             // );
-            domParent.appendChild(fiber.dom);
+            //domParent.appendChild(fiber.dom);
           }
         } else {
           console.log('MISSING ALTERNATVE!');

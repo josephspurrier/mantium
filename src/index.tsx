@@ -11,7 +11,7 @@ document.body.appendChild(root);
 m.config.setVerbose(true);
 
 // Full(root);
-// RunTest1();
+RunTest1();
 // RunTest2();
 
-m.render('hello world', document.body);
+//m.render('hello world', document.body);
