@@ -31,10 +31,12 @@ export function createElement(
     return r;
   };
 
-  if (body) {
+  console.log('Info:', body);
+
+  if (typeof body === 'string') {
     return {
       type: NodeType.ELEMENT,
-      tag: body as string,
+      tag: body,
       props: {
         ...props,
         children: getChildren(children),
@@ -43,7 +45,7 @@ export function createElement(
   }
   return {
     type: NodeType.FRAGMENT,
-    tag: 'UNUSED',
+    tag: body,
     props: {
       ...props,
       children: getChildren(children),
