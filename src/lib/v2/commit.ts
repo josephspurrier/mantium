@@ -37,7 +37,7 @@ export function render(
         children: [element],
       },
       alternate: currentRoot,
-      index: -1,
+      //index: -1,
     };
     deletions = [];
     setNextUnitOfWork(wipRoot);
@@ -51,7 +51,7 @@ export function render(
         children: [element],
       },
       alternate: currentRoot,
-      index: -1,
+      //index: -1,
     };
     deletions = [];
     setNextUnitOfWork(wipRoot);
@@ -72,7 +72,7 @@ export function redraw(origin = ''): void {
       dom: currentRoot.dom,
       props: currentRoot.props,
       alternate: currentRoot,
-      index: -1,
+      //index: -1,
     };
   }
   if (verbose) console.log('Redraw WipRoot:', wipRoot);
@@ -135,10 +135,13 @@ function commitWork(fiber: Fiber | undefined, sibling = false) {
     //   // );
     // }
 
+    // This article suggests doing a replace:
+    // https://medium.com/@KevinBGreene/adventures-in-the-virtual-dom-part-2-the-diff-render-loop-dac7f879bb21
+
     // FIXME: This will redraw everything, but when you remove it, elements
     // get out of order because the PLACEMENT above will add a child to the end
     // while and UPDATE will not change the location of the element.
-    domParent.appendChild(fiber.dom);
+    //domParent.appendChild(fiber.dom);
   } else if (fiber.effectTag === 'DELETION') {
     commitDeletion(fiber, domParent, sibling);
     return;

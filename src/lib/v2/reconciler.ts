@@ -35,13 +35,6 @@ function reconcileChildren(
   let firstSibling: Fiber | undefined;
   let prevSibling: Fiber | undefined;
 
-  // const parentEffect: string =
-  //   (curFiber.parent && curFiber.parent.effectTag) || '';
-
-  //console.log('elements:', elements.length);
-
-  //const parentIndex = curFiber.index > 0 ? curFiber.index : 0;
-
   while (index < elements.length || oldFiber !== undefined) {
     const element = elements[index];
     let newFiber: Fiber | undefined;
@@ -71,9 +64,6 @@ function reconcileChildren(
       const sameType =
         oldFiber && element && String(element.tag) == String(oldFiber.body);
 
-      //console.log('Old fiber:', oldFiber);
-      //console.log('New fiber:', element, index + startIndex);
-
       // If the fiber already exists, then just update it.
       if (element && !sameType) {
         // If the fiber doesn't exist yet, set it to create.
@@ -84,18 +74,15 @@ function reconcileChildren(
           dom: undefined,
           parent: curFiber,
           alternate: undefined,
-          index: index,
+          //index: index,
           effectTag: 'PLACEMENT',
         };
 
-        // if (oldFiber) {
-        //   newFiber.index = oldFiber.index;
-
         // }
-        if (curFiber.index > -1 && typeof curFiber.body !== 'string') {
-          //console.log('Parent Index:', curFiber.index);
-          newFiber.index = curFiber.index + index;
-        }
+        // if (curFiber.index > -1 && typeof curFiber.body !== 'string') {
+        //   //console.log('Parent Index:', curFiber.index);
+        //   newFiber.index = curFiber.index + index;
+        // }
 
         //console.log('Fiber PLACEMENT:', oldFiber, newFiber);
       } else if (oldFiber && sameType) {
@@ -106,14 +93,14 @@ function reconcileChildren(
           dom: oldFiber.dom,
           parent: curFiber,
           alternate: oldFiber,
-          index: index, //FIXME: I don't know if this is index or -1?
+          //index: index, //FIXME: I don't know if this is index or -1?
           effectTag: 'UPDATE',
         };
 
-        if (curFiber.index > -1 && typeof curFiber.body !== 'string') {
-          //console.log('Parent Index:', curFiber.index);
-          newFiber.index = curFiber.index + index;
-        }
+        // if (curFiber.index > -1 && typeof curFiber.body !== 'string') {
+        //   //console.log('Parent Index:', curFiber.index);
+        //   newFiber.index = curFiber.index + index;
+        // }
 
         //console.log('Fiber UPDATE:', oldFiber, newFiber);
       }

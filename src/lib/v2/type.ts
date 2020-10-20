@@ -24,7 +24,7 @@ export interface Fiber {
   // We also add the alternate property to every fiber. This property is a
   // link to the old fiber, the fiber that we committed to the DOM in the previous commit phase.
   alternate?: Fiber;
-  index: number;
+  //index: number;
   parent?: Fiber;
   sibling?: Fiber;
   child?: Fiber;
